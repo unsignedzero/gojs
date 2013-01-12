@@ -1,7 +1,7 @@
 ﻿/*Created by David Tran (unsignedzero) twice
  *on 1-3-2013
- *Version 0.6.2.0
- *Last modified 1-9-2013
+ *Version 0.6.3.0
+ *Last modified 1-12-2013
  *This code draws an interactive GO board on the screen
  *allowing two users to play the game
  */
@@ -26,6 +26,9 @@ var GO_UI_curPStoneAnim;
 var GO_UI_stoneBoard;
 //Stores the backend Go Board from the engine
 var GO_UI_backendGOBoard;
+//Cursor for GO Game
+var GO_UI_cursor;
+var GO_UI_cursorAnim;
 
 //Animation Values
 var captureFade = 500;
@@ -36,7 +39,7 @@ var GO_UI_stage = new Kinetic.Stage({
   height: 700
 });
 
-var GO_UI_menuLayer    = new Kinetic.Layer();
+var GO_UI_cursorLayer  = new Kinetic.Layer();
 var GO_UI_brdLayer     = new Kinetic.Layer();
 var GO_UI_msgLayer     = new Kinetic.Layer();
 var GO_UI_UILayer      = new Kinetic.Layer();
@@ -219,6 +222,9 @@ function layGoStones( _layer, _x, _y, _size, div ){
 
         if ( checkValidMove(this.posID, GO_UI_curPTurn + 1 ) ){
           this.setOpacity(1);
+
+          updateCursor(this.getX(),this.getY());
+
           //this.setFill( this.getFill() == 'white' ? 'black' : 'white' );
           if( GO_UI_curPTurn == 0 ){
             GO_UI_curPTurn = 1;
@@ -256,6 +262,8 @@ function createBoard( brdLayer, _x, _y, sideLength, div ){
   GO_UI_backendGOBoard = new ZX_Board(div+1);
   drawGOBoard(                 brdLayer,_x,_y,sideLength,div);
   interfaceArray = layGoStones(brdLayer,_x,_y,sideLength,div);
+
+  drawCursor( GO_UI_cursorLayer , sideLength );
   return interfaceArray;
 }
 
@@ -494,6 +502,8 @@ function checkValidMove( pos, color_id ){
     GO_UI_CurTurnLayer.draw();
   }
 
+  //Update cursor
+
   return valid;
 }
 
@@ -641,6 +651,65 @@ function externCreateBoard( div ){
   GO_UI_stoneBoard = createBoard( GO_UI_brdLayer, 100,100,500,div);
 }
 
+function drawCursor( _layer , _size ){
+  //Creates the cursor
+  var sideLength  =  (Math.floor(_size / 25)<<1) + 3;
+  var _x = 45 - (sideLength>>1);
+  var _y = 45 - (sideLength>>1);
+
+  GO_UI_cursor =  new Kinetic.Rect({
+    x:           _x,
+    y:           _y,
+    width:       sideLength,
+    height:      sideLength,
+    stroke:      'red',
+    strokeWidth: 2,
+  });
+
+  if ( GO_UI_ANIM ){
+    GO_UI_cursorAnim = new Kinetic.Animation(function(frame){
+      if ( frame.time > 0 ){
+        this.stop();
+        frame.time = 0;
+      }
+    }, GO_UI_cursorLayer);
+    GO_UI_cursorAnim.stop();
+  }
+
+  _layer.add( GO_UI_cursor );
+
+}
+
+function updateCursor( _x , _y){
+  var curX   = GO_UI_cursor.getX() + (GO_UI_cursor.getWidth()>>1);
+  var curY   = GO_UI_cursor.getY() + (GO_UI_cursor.getHeight()>>1);
+
+  if ( GO_UI_ANIM ){
+    var deltaX = _x-curX;
+    var deltaY = _y-curY;
+
+    GO_UI_cursorAnim.stop();
+
+    GO_UI_cursorAnim = new Kinetic.Animation(function(frame) {
+      GO_UI_cursor.setX( Math.floor(curX + deltaX*(frame.time/1000))- (GO_UI_cursor.getWidth()>>1));
+      GO_UI_cursor.setY( Math.floor(curY + deltaY*(frame.time/1000))- (GO_UI_cursor.getHeight()>>1));
+      if( frame.time >= 1000 ){
+        GO_UI_cursorAnim.stop();
+        frame.time = 0;
+        GO_UI_cursor.setX( _x - (GO_UI_cursor.getWidth()>>1));
+        GO_UI_cursor.setY( _y - (GO_UI_cursor.getHeight()>>1));
+      }
+    },GO_UI_cursorLayer);
+
+    GO_UI_cursorAnim.start();
+  }
+  else{
+    GO_UI_cursor.setX( _x - (GO_UI_cursor.getWidth()>>1));
+    GO_UI_cursor.setY( _y - (GO_UI_cursor.getHeight()>>1));
+    GO_UI_cursorLayer.draw();
+  }
+}
+
 function startAfterFade(){
 }
 
@@ -650,6 +719,7 @@ function externStartUI(){
 
   //Add the layers to the GO_UI_stage
   //Remember first add is the lowest layer
+  GO_UI_stage.add(GO_UI_cursorLayer);
   GO_UI_stage.add(GO_UI_msgLayer);
   GO_UI_stage.add(GO_UI_UILayer);
   GO_UI_stage.add(GO_UI_brdLayer);
