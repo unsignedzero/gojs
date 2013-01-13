@@ -11,7 +11,7 @@
 
 var ZX_BOARD_DEBUG = false;
 
-ZX_Board = function( size ) {
+ZX_Board = function( size, MODE = 1 ) {
 
   //Private Variable Members 
   //CONSTSTANTS
@@ -21,11 +21,18 @@ ZX_Board = function( size ) {
   var EMPTY_PIECE   = 0;
   var NEUTRAL_PIECE = 100;
 
+  var _MODE = MODE;
+  /*0 UNLIMITED, no stone counter
+   *1 REAL,      stones are acounted for
+   */
+  
   //Local
   var _Board      = [];
   var _History    = {};
   var _BoardHash  = {};
 
+  var _StoneCount;
+  
   //HELPER VAR
   var i;
 
@@ -40,6 +47,13 @@ ZX_Board = function( size ) {
   for( i = 0 ; i < MAX ; i++ )
     _Board[i] = EMPTY_PIECE;
 
+  if ( _MODE == 1 ){
+    if ( MAX&1 )
+       _StoneCount = [ 1+(MAX>>1), 1+(MAX>>1) , 0 , 0];
+    else
+       _StoneCount = [ MAX>>1, MAX>>1 , 0 , 0];
+  }
+  
   /***************************************************************************/
   /////Private Members
   
@@ -82,17 +96,14 @@ ZX_Board = function( size ) {
   
   function cloneBoard(){
     //Returns a deep copy of the board
-    
-    /*
-    var new_board = [];
 
-    for( i = 0 ; i < MAX; i++)
-      new_board.push(_Board[i]);
-
-    return new_board;
-    
-    */
     return $.extend(true,[],_Board);
+  };
+  
+  function cloneStoneCount(){
+    //Returns a deep copy of the array passed in
+
+    return $.extend(true,[],_StoneCount);
   };
 
   function clearBoard(){
@@ -210,6 +221,19 @@ ZX_Board = function( size ) {
   };
 
   /////Main Functions
+  this.curMode = function(){
+    if ( _MODE == 0 )
+      return [0,"unlimited"];
+    else
+      return [1,"real"];
+  }
+  
+  this.stoneCount = function(){
+    //Returns a copy of the current stoneCount
+    
+    return cloneStoneCount();
+  }
+  
   this.curState = function(){
     //Returns a copy of the current board
 
@@ -230,18 +254,30 @@ ZX_Board = function( size ) {
     var isValid;
     var i,j;
     var new_board; 
+    var colorPiece = color - 1;
     var enemyColor = color == 2 ? 1 : 2;
+    var stoneCapture = 0;
 
+    //Invalid position
     if( pos < 0 || pos >= MAX )
       return false
 
-        if ( _Board[pos] != EMPTY_PIECE )
-          return false;
+    //Piece already contained
+    if ( _Board[pos] != EMPTY_PIECE )
+      return false;
+
+    //Out of stone
+    if ( _MODE == 1 && _StoneCount[colorPiece] == 0 )
+      return false;
 
     isValid = true;
 
     //At this point, the move is valid but...
     _Board[pos] = color;
+    
+    //Check Hash
+    if ( _MODE == 1 ){
+    }
 
     //Will this move be suicidal?
     if ( hasLiberty(pos) < 1 ){
@@ -254,13 +290,20 @@ ZX_Board = function( size ) {
       if ( ( i =  direction[j](pos) ) != -1 )
         if ( _Board[i] != color )
           if ( hasLiberty( i ) == false ){
-            canRemoveStones( i );
+            stoneCapture += canRemoveStones( i );
             isValid = true;
           }    
 
     if ( !isValid ){
-      alert("FAILED");
+      //alert("FAILED");
       _Board[pos] = EMPTY_PIECE;
+    }
+    else if ( _MODE == 1 ){
+      //Update Stone Count
+      _StoneCount[        colorPiece  ] -= 1;
+      _StoneCount[ 2 + (1^colorPiece) ] += stoneCapture;
+
+      //Update Hash
     }
     return isValid;
   };

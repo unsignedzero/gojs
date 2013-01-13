@@ -10,6 +10,7 @@
 //any change or made
 
 //WARNING setOpacity explicit wants a float type. Feeding it an int, makes it do nothing
+//ZIndex must be non-negative
 
 var GO_UI_DEBUG = false;
 var GO_UI_ANIM  = true;
@@ -30,6 +31,13 @@ var GO_UI_backendGOBoard;
 var GO_UI_cursor;
 var GO_UI_cursorAnim;
 
+//GO Status Object
+var GO_UI_statusObj = [];
+
+//GO Pause Button
+var GO_UI_PauseButton;
+var GO_UI_PauseBack;
+
 //Animation Values
 var captureFade = 500;
 
@@ -39,6 +47,7 @@ var GO_UI_stage = new Kinetic.Stage({
   height: 700
 });
 
+var GO_UI_pauseLayer   = new Kinetic.Layer();
 var GO_UI_cursorLayer  = new Kinetic.Layer();
 var GO_UI_brdLayer     = new Kinetic.Layer();
 var GO_UI_msgLayer     = new Kinetic.Layer();
@@ -267,6 +276,67 @@ function createBoard( brdLayer, _x, _y, sideLength, div ){
   return interfaceArray;
 }
 
+function drawCursor( _layer , _size ){
+  //Creates the cursor
+  var sideLength  =  (Math.floor(_size / 25)<<1) + 3;
+  var _x = 45 - (sideLength>>1);
+  var _y = 45 - (sideLength>>1);
+  
+  _layer.setOpacity(0.0);
+
+  GO_UI_cursor =  new Kinetic.Rect({
+    x:           _x,
+    y:           _y,
+    width:       sideLength,
+    height:      sideLength,
+    stroke:      'red',
+    strokeWidth: 2,
+  });
+
+  if ( GO_UI_ANIM ){
+    GO_UI_cursorAnim = new Kinetic.Animation(function(frame){
+      if ( frame.time > 0 ){
+        this.stop();
+        frame.time = 0;
+      }
+    }, GO_UI_cursorLayer);
+    GO_UI_cursorAnim.stop();
+  }
+
+  _layer.add( GO_UI_cursor );
+
+}
+
+function updateCursor( _x , _y){
+  var curX   = GO_UI_cursor.getX() + (GO_UI_cursor.getWidth()>>1);
+  var curY   = GO_UI_cursor.getY() + (GO_UI_cursor.getHeight()>>1);
+
+  if ( GO_UI_ANIM ){
+    var deltaX = _x-curX;
+    var deltaY = _y-curY;
+
+    GO_UI_cursorAnim.stop();
+
+    GO_UI_cursorAnim = new Kinetic.Animation(function(frame) {
+      GO_UI_cursor.setX( Math.floor(curX + deltaX*(frame.time/1000))- (GO_UI_cursor.getWidth()>>1));
+      GO_UI_cursor.setY( Math.floor(curY + deltaY*(frame.time/1000))- (GO_UI_cursor.getHeight()>>1));
+      if( frame.time >= 1000 ){
+        GO_UI_cursorAnim.stop();
+        frame.time = 0;
+        GO_UI_cursor.setX( _x - (GO_UI_cursor.getWidth()>>1));
+        GO_UI_cursor.setY( _y - (GO_UI_cursor.getHeight()>>1));
+      }
+    },GO_UI_cursorLayer);
+
+    GO_UI_cursorAnim.start();
+  }
+  else{
+    GO_UI_cursor.setX( _x - (GO_UI_cursor.getWidth()>>1));
+    GO_UI_cursor.setY( _y - (GO_UI_cursor.getHeight()>>1));
+    GO_UI_cursorLayer.draw();
+  }
+}
+
 function clearLayer( _layer ){
   //Here we clear the layer of everything
   //(Note:To remove one node (graphic element) use the method remove
@@ -308,8 +378,11 @@ function drawPStoneUI( CurTurnLayer ){
     $('container').animate({
       "left": ($(window).width())>>1}, "slow");
      */
+    /*
     ZX_BOARD_DEBUG = ZX_BOARD_DEBUG ? false : true;
     externWriteMsg( "DEBUG STATUS: " + ZX_BOARD_DEBUG );
+     */
+   loadPauseScreen();
     });
 
   CurTurnLayer.add(temp);
@@ -356,7 +429,7 @@ function drawPStoneUI( CurTurnLayer ){
           GO_UI_UILayer.setOpacity( 1 - (frame.time/200) );
           if ( frame.time >= 200 ){
             this.stop();
-            GO_UI_stage.setWidth(620);
+            GO_UI_stage.setWidth(626);
             frame.time = 0;
             UI_shrink.fade = false;
           }
@@ -372,13 +445,13 @@ function drawPStoneUI( CurTurnLayer ){
         }
       }, GO_UI_UILayer);
  
-      UI_shrink.fade = GO_UI_stage.getWidth() < 625 ? false : true;
+      UI_shrink.fade = GO_UI_stage.getWidth() < 630 ? false : true;
 
       UI_shrink.start();
     }
     //Case B no GO_UI_ANIM
     else{
-      if( GO_UI_stage.getWidth() < 625 ){
+      if( GO_UI_stage.getWidth() < 630 ){
         GO_UI_UILayer.setOpacity(1.0);
         GO_UI_UILayer.draw();
         GO_UI_stage.setWidth(800);
@@ -396,9 +469,12 @@ function drawPStoneUI( CurTurnLayer ){
 
 function drawColumnUI( UILayer ){
  //Draws the right column UI (for future use) and other non-board UI
-  var _x, _y, _width, _height, _font, _fontSize;
+  var _x, _y, _width, _height, _font, _fontSize, _radius;
+  var _stonePad, _textPad, _statusy;
   var _turnBoxSize;
   var temp;
+  var curY;
+  var i, max, j, max_j;
 
   _x           = 630;
   _y           =  20;
@@ -407,6 +483,13 @@ function drawColumnUI( UILayer ){
   _font        = 'Calibri';
   _fontSize    =  20;
   _turnBoxSize = 140;
+
+  //Status Var
+  _radius      =  20;
+  _stonePad    =  10;
+  _textPad     =  5;
+  _statusY     =  _height*0.15;
+  curY         =   0;
 
 /////Draw Right Column UI Element
   UILayer.add( new Kinetic.Rect({
@@ -417,6 +500,75 @@ function drawColumnUI( UILayer ){
     stroke:      'black',
     strokeWidth: 2
   }));
+
+  //Creates the Status Box
+  max = 2;
+  for( i = 0 ; i < max ; i++ ){
+
+     temp = new Kinetic.Text({
+      x:           _x + (_width>>1),
+      y:           _y + _statusY + curY + _textPad,
+      text:        i ? 'Captured' : 'Remaining',
+      fontSize:    _fontSize + 6,
+      font:        _font,
+      Fill:       'black',
+    });
+    
+    temp.setOffset({
+      x: temp.getWidth()>>1,
+    });
+
+    GO_UI_statusObj.push(temp);
+
+    curY += _textPad;
+    
+    GO_UI_statusObj.push( new Kinetic.Rect({
+      x:           _x,
+      y:           _y + _statusY + curY - _textPad,
+      width:       _width,
+      height:      (_textPad<<1) + _fontSize,
+      stroke:      'black',
+      strokeWidth: 2
+    })); 
+    
+    curY += _fontSize + _textPad;
+
+    max_j = 2;
+    for( j = 0 ; j < max_j ; j++ ){
+      GO_UI_statusObj.push( new Kinetic.Circle({
+        x:           _x + _radius + _stonePad,
+        y:           _y + _radius + _stonePad + _statusY + curY,
+        radius:      _radius,
+        fill:        j ? 'black' : 'white',
+        stroke:      'black',
+        strokeWidth: 2
+      })); 
+
+      GO_UI_statusObj.push( new Kinetic.Text({
+        x:           _x + _radius + _stonePad + _textPad + _radius,
+        y:           _y + ((_radius)>>1) + _stonePad + _statusY + curY - 3,
+        text:        '0',
+        fontSize:    _fontSize + 12,
+        font:        _font,
+        Fill:       'black',
+      })); 
+
+      GO_UI_statusObj.push( new Kinetic.Rect({
+        x:           _x,
+        y:           _y + _statusY + curY,
+        width:       _width,
+        height:      ( _radius+_stonePad)<<1,
+        stroke:      'black',
+        strokeWidth: 2
+      })); 
+
+      curY += (_radius+_stonePad)<<1;
+    }
+  }
+
+  max = GO_UI_statusObj.length;
+  for( i = 0 ; i < max ; i++)
+    UILayer.add( GO_UI_statusObj[i] );
  
   //Create Text
   temp = new Kinetic.Text({
@@ -426,7 +578,6 @@ function drawColumnUI( UILayer ){
     fontSize:    _fontSize + 6,
     font:        _font,
     Fill:       'black',
-    textColor:  'black',
   });
 
   //Aligns the text in the center. >>1 is /2 in this case
@@ -471,6 +622,8 @@ function drawColumnUI( UILayer ){
 
 function checkValidMove( pos, color_id ){
   //Checks IF the click is valid and PStoneUI, as needed
+  var stoneCount;
+  var i, max;
   var valid = true;
   
   //Call code to check
@@ -502,7 +655,26 @@ function checkValidMove( pos, color_id ){
     GO_UI_CurTurnLayer.draw();
   }
 
-  //Update cursor
+  //Update Stone Count
+  stoneCount = GO_UI_backendGOBoard.stoneCount();
+
+  GO_UI_statusObj[ 3].setText(stoneCount[0]);
+  GO_UI_statusObj[ 6].setText(stoneCount[1]);
+  GO_UI_statusObj[11].setText(stoneCount[2]);
+  GO_UI_statusObj[14].setText(stoneCount[3]);
+
+  /*
+    //Run this to find out which entries contain text
+    max = GO_UI_statusObj.length;
+    for( i = 0 ; i < max ; i++ ){
+      try{
+        GO_UI_statusObj[ i ].setText(i);
+      }
+      catch( error ){}
+    }
+   */
+
+  GO_UI_UILayer.draw();
 
   return valid;
 }
@@ -589,6 +761,158 @@ function drawBoardFade( deadPieces ){
   anim.start();
 }
 
+function drawPauseScreen( pauseLayer ){
+  pauseLayer.setOpacity(0.0);
+  
+  var Border = 5;
+  
+  var width  = GO_UI_stage.getWidth();
+  var height    = 640 - (Border<<2);
+  var unpause_y = 60;  
+  var temp;
+  var box;
+
+  GO_UI_PauseBack = new Kinetic.Rect({
+    x:             Border,
+    y:             Border,
+    width:         width,
+    height:        height,
+    stroke:        '#666',
+    strokeWidth:   Border,
+    fill:          '#888',
+    opacity:       0.5,
+    cornerRadius:  20,
+  });
+  
+  pauseLayer.add(GO_UI_PauseBack);
+  
+  temp = new Kinetic.Text({
+    x:             width>>1,
+    y:             height>>1,
+    fill:          'black',
+    shadowColor:   'white',
+    shadowBlur:    2,
+    shadowOpacity: 1,
+    
+    fontSize:      60,
+    font:          'Calibri',
+    text:          'Paused',
+  });
+  
+  temp.setOffset({
+    x:   temp.getWidth()>>1,
+    y:   temp.getHeight()>>1
+  });
+  
+  pauseLayer.add(temp);
+  
+  temp = new Kinetic.Text({
+    x:             width>>1,
+    y:             unpause_y+(height>>1),
+    fill:          'black',
+    shadowColor:   'white',
+    shadowBlur:    2,
+    shadowOpacity: 1,
+    
+    fontSize:      40,
+    font:          'Calibri',
+    text:          'Continue',
+  });
+
+  temp.setOffset({
+    x:   temp.getWidth()>>1,
+    y:   temp.getHeight()>>1
+  });
+  
+  
+  GO_UI_PauseButton = new Kinetic.Rect({
+    x:            width>>1,
+    y:            unpause_y+(height>>1),
+    stroke:       '#222',
+    strokeWidth:   5,
+    width:         10+temp.getWidth(),
+    height:        10+temp.getHeight(),
+    shadowColor:   'black',
+    shadowBlur:    10,
+    shadowOpacity: 1,
+    cornerRadius:  10
+  });
+
+  GO_UI_PauseButton.inAnim = true;
+  
+  GO_UI_PauseButton.setOffset({
+    x:   GO_UI_PauseButton.getWidth()>>1,
+    y:   GO_UI_PauseButton.getHeight()>>1
+  });
+  
+  GO_UI_PauseButton.on('mouseover', function(){
+    if ( !GO_UI_PauseButton.inAnim ){
+      GO_UI_PauseButton.setStroke("#ddd");
+      pauseLayer.draw();
+    }
+  });
+  
+  GO_UI_PauseButton.on('mouseout', function(){
+    if ( !GO_UI_PauseButton.inAnim ){
+      GO_UI_PauseButton.setStroke("#222");
+      pauseLayer.draw();
+    }
+  });
+  
+  GO_UI_PauseButton.on('mousedown', function(){
+    if ( !GO_UI_PauseButton.inAnim ){
+      if ( GO_UI_ANIM ){
+        GO_UI_PauseButton.inAnim = true;
+        (new Kinetic.Animation(function(frame){
+          pauseLayer.setOpacity( 1 - (frame.time/2000) );
+          if ( frame.time>= 2000 ){
+            pauseLayer.setZIndex(0);
+            this.stop();
+            frame.time = 0;
+            pauseLayer.setOpacity(0.0);
+            //GO_UI_PauseButton.inAnim = false;
+            afterFadePauseScreen()
+          }
+        },pauseLayer)).start();
+      }
+      else{
+        pauseLayer.setZIndex(-2);
+        pauseLayer.setOpacity(0.0);
+        afterFadePauseScreen();
+      }
+    }
+  });
+  
+  pauseLayer.add(temp);
+  pauseLayer.add(GO_UI_PauseButton);
+  pauseLayer.setZIndex(0);
+  //pauseLayer.draw();
+  
+  //pauseLayer.setOpacity(1.0);
+  //pauseLayer.setZIndex(50);
+}
+
+function loadPauseScreen(){
+  GO_UI_PauseBack.setWidth(GO_UI_stage.getWidth()-10);
+  GO_UI_pauseLayer.setZIndex(50);
+  GO_UI_pauseLayer.setOpacity(1.0);
+  if ( GO_UI_ANIM ){  
+    (new Kinetic.Animation(function(frame){
+      GO_UI_pauseLayer.setOpacity( frame.time/2000 );
+      if ( frame.time>= 2000 ){
+        this.stop();
+        frame.time = 0;
+        GO_UI_PauseButton.inAnim = false;
+      }
+    },GO_UI_pauseLayer)).start();
+  }
+  else{
+  }
+}
+
+function afterFadePauseScreen(){
+}
+
 function drawMainMenu( menuLayer ){
   //Draw Box
   menuLayer.add( new Kinetic.Rect({
@@ -651,66 +975,9 @@ function externCreateBoard( div ){
   GO_UI_stoneBoard = createBoard( GO_UI_brdLayer, 100,100,500,div);
 }
 
-function drawCursor( _layer , _size ){
-  //Creates the cursor
-  var sideLength  =  (Math.floor(_size / 25)<<1) + 3;
-  var _x = 45 - (sideLength>>1);
-  var _y = 45 - (sideLength>>1);
-
-  GO_UI_cursor =  new Kinetic.Rect({
-    x:           _x,
-    y:           _y,
-    width:       sideLength,
-    height:      sideLength,
-    stroke:      'red',
-    strokeWidth: 2,
-  });
-
-  if ( GO_UI_ANIM ){
-    GO_UI_cursorAnim = new Kinetic.Animation(function(frame){
-      if ( frame.time > 0 ){
-        this.stop();
-        frame.time = 0;
-      }
-    }, GO_UI_cursorLayer);
-    GO_UI_cursorAnim.stop();
-  }
-
-  _layer.add( GO_UI_cursor );
-
-}
-
-function updateCursor( _x , _y){
-  var curX   = GO_UI_cursor.getX() + (GO_UI_cursor.getWidth()>>1);
-  var curY   = GO_UI_cursor.getY() + (GO_UI_cursor.getHeight()>>1);
-
-  if ( GO_UI_ANIM ){
-    var deltaX = _x-curX;
-    var deltaY = _y-curY;
-
-    GO_UI_cursorAnim.stop();
-
-    GO_UI_cursorAnim = new Kinetic.Animation(function(frame) {
-      GO_UI_cursor.setX( Math.floor(curX + deltaX*(frame.time/1000))- (GO_UI_cursor.getWidth()>>1));
-      GO_UI_cursor.setY( Math.floor(curY + deltaY*(frame.time/1000))- (GO_UI_cursor.getHeight()>>1));
-      if( frame.time >= 1000 ){
-        GO_UI_cursorAnim.stop();
-        frame.time = 0;
-        GO_UI_cursor.setX( _x - (GO_UI_cursor.getWidth()>>1));
-        GO_UI_cursor.setY( _y - (GO_UI_cursor.getHeight()>>1));
-      }
-    },GO_UI_cursorLayer);
-
-    GO_UI_cursorAnim.start();
-  }
-  else{
-    GO_UI_cursor.setX( _x - (GO_UI_cursor.getWidth()>>1));
-    GO_UI_cursor.setY( _y - (GO_UI_cursor.getHeight()>>1));
-    GO_UI_cursorLayer.draw();
-  }
-}
-
 function startAfterFade(){
+  GO_UI_cursorLayer.setOpacity(1.0);
+  drawPauseScreen(GO_UI_pauseLayer);
 }
 
 function externStartUI(){
@@ -719,13 +986,19 @@ function externStartUI(){
 
   //Add the layers to the GO_UI_stage
   //Remember first add is the lowest layer
-  GO_UI_stage.add(GO_UI_cursorLayer);
+  
+  GO_UI_stage.add(GO_UI_pauseLayer);
+
   GO_UI_stage.add(GO_UI_msgLayer);
   GO_UI_stage.add(GO_UI_UILayer);
+  
+  GO_UI_stage.add(GO_UI_cursorLayer);
   GO_UI_stage.add(GO_UI_brdLayer);
   GO_UI_stage.add(GO_UI_FadeLayer);
+  
   GO_UI_stage.add(GO_UI_CurTurnLayer);
   
+ 
   if ( GO_UI_ANIM ){
     GO_UI_stage.setOpacity(0.0);
     (new Kinetic.Animation(function(frame) {
