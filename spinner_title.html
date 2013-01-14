@@ -1,0 +1,225 @@
+﻿<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html"; charset="utf-8" />
+    <meta name="description" content="Go Board Test Page" />
+    <meta name="robots" content="noodp" >
+    <meta name="ROBOTS" content="NOINDEX">
+    
+    <link rel="shortcut icon" href="ZCS1.ico" />
+    <title>Go DEMO Page</title>
+    
+    <link rel="stylesheet" type="text/css" href="CSS/reset.css" />
+ 
+    <script type="application/javascript" src="LIB/kinetic-v4.3.0.min.js"></script>
+  </head>
+  <body>
+    <div id="container"></div>
+    <script>
+      var SPIN_ANIM;
+      var SPIN_SECOND_START,SPIN_SECOND_END;
+      var to_end;
+      var mouse_on;
+      
+      to_end = false;
+      mouse_on = false;
+    
+      var stage = new Kinetic.Stage({
+        container: 'container',
+        width: 800,
+        height: 800,
+      });
+      
+      var MainLayer = new Kinetic.Layer();
+
+      var _radius = 350;
+      
+      function drawCircle( _layer, _x , _y ){
+      
+         _x += _radius;
+         _y += _radius;
+     
+        var _testy2 = 240;
+        
+        var arc_end = Math.sin(Math.PI/4);
+        var arc_mid = Math.tan(Math.PI/8);
+        
+        var circle_back = new Kinetic.Shape({
+          x: _x,
+          y: _y,
+          offset: [_x+_radius,_y+_radius],
+          drawFunc: function(canvas) {
+            //Reference
+            //http://board.flashkit.com/board/showthread.php?369672-Draw-a-circle-with-quadratic-bezier-curves
+            var context = canvas.getContext();
+            context.beginPath();
+            context.moveTo(_x+(_radius<<1), _y+_radius); 
+            context.quadraticCurveTo(
+              _radius+_x+_radius,-arc_mid*_radius+_y+_radius,
+              arc_end*_radius+_x+_radius,-arc_end*_radius+_y+_radius);
+            context.quadraticCurveTo(
+              arc_mid*_radius+_x+_radius,        -_radius+_y+_radius,
+                              _x+_radius,        -_radius+_y+_radius);
+            context.quadraticCurveTo(
+             -arc_mid*_radius+_x+_radius,        -_radius+_y+_radius,
+             -arc_end*_radius+_x+_radius,-arc_end*_radius+_y+_radius);
+            context.quadraticCurveTo(
+                     -_radius+_x+_radius,-arc_mid*_radius+_y+_radius,
+                     -_radius+_x+_radius,                 _y+_radius);
+            context.bezierCurveTo(
+                             (_radius>>1) +_x,_radius+_y-_testy2,
+               ((_radius   )+(_radius>>1))+_x,_radius+_y+_testy2, 
+                             (_radius<<1) +_x,_radius+_y);
+            context.closePath();
+            canvas.fillStroke(this);
+          },
+          fill: 'black',
+          //stroke: 'black',
+        });
+         
+        var circle = new Kinetic.Shape({
+          x: _x,
+          y: _y,
+          offset: [_x+_radius,_y+_radius],
+          
+          drawFunc: function(canvas) {
+            //Reference
+            //http://board.flashkit.com/board/showthread.php?369672-Draw-a-circle-with-quadratic-bezier-curves
+            var context = canvas.getContext();
+            context.beginPath();
+            context.moveTo(_x+(_radius<<1), _y+_radius); 
+            context.quadraticCurveTo(
+              _radius+_x+_radius,-arc_mid*_radius+_y+_radius,
+              arc_end*_radius+_x+_radius,-arc_end*_radius+_y+_radius);
+            context.quadraticCurveTo(
+              arc_mid*_radius+_x+_radius,        -_radius+_y+_radius,
+                              _x+_radius,        -_radius+_y+_radius);
+            context.quadraticCurveTo(
+             -arc_mid*_radius+_x+_radius,        -_radius+_y+_radius,
+             -arc_end*_radius+_x+_radius,-arc_end*_radius+_y+_radius);
+            context.quadraticCurveTo(
+                     -_radius+_x+_radius,-arc_mid*_radius+_y+_radius,
+                     -_radius+_x+_radius,                 _y+_radius);
+            context.bezierCurveTo(
+                             (_radius>>1) +_x,_radius+_y-_testy2,
+               ((_radius   )+(_radius>>1))+_x,_radius+_y+_testy2, 
+                             (_radius<<1) +_x,_radius+_y);
+            context.closePath();
+            canvas.fillStroke(this);
+          },
+          fill: 'black',
+          //stroke: 'black',
+          //strokeWidth: 2,
+            
+          drawHitFunc: function(canvas) {
+            var context = canvas.getContext();
+            context.beginPath();
+            context.moveTo(_x+(_radius<<1), _y+_radius); 
+            context.quadraticCurveTo(
+              _radius+_x+_radius,-arc_mid*_radius+_y+_radius,
+              arc_end*_radius+_x+_radius,-arc_end*_radius+_y+_radius);
+            context.quadraticCurveTo(
+              arc_mid*_radius+_x+_radius,        -_radius+_y+_radius,
+                              _x+_radius,        -_radius+_y+_radius);
+            context.quadraticCurveTo(
+             -arc_mid*_radius+_x+_radius,        -_radius+_y+_radius,
+             -arc_end*_radius+_x+_radius,-arc_end*_radius+_y+_radius);
+            context.quadraticCurveTo(
+                     -_radius+_x+_radius,-arc_mid*_radius+_y+_radius,
+                     -_radius+_x+_radius,                 _y+_radius);
+            context.bezierCurveTo(
+                             (_radius>>1) +_x,_radius+_y-_testy2,
+               ((_radius   )+(_radius>>1))+_x,_radius+_y+_testy2, 
+                             (_radius<<1) +_x,_radius+_y);
+            context.closePath();
+            canvas.fillStroke(this);
+          },
+        });
+
+        circle.on('mousedown', function(){
+        });
+        
+        SPIN_SECOND_START = (new Kinetic.Animation(function(frame){
+            var angleDiff = frame.timeDiff * (Math.PI/2) / 1000;
+            circle_back.rotate(angleDiff);
+            if ( frame.time >= 2000 ){
+              frame.time = 0;
+              circle_back.setRotation(circle.getRotation()+Math.PI);
+              SPIN_SECOND_START.stop();
+              if ( !mouse_on ){
+                to_end  = false;
+                SPIN_SECOND_END.start();
+              }
+              else
+                to_end = true;
+            }
+          },_layer));
+          
+       SPIN_SECOND_END = (new Kinetic.Animation(function(frame){
+            var angleDiff = frame.timeDiff * (Math.PI/2) / 1000;
+            circle_back.rotate(angleDiff);
+            if ( frame.time >= 2000 ){
+              frame.time = 0;
+              circle_back.setRotation(circle.getRotation());
+              SPIN_SECOND_END.stop();
+              to_end = false;
+              }
+          },_layer));
+
+       SPIN_ANIM = (new Kinetic.Animation(function(frame){
+            var angleDiff = frame.timeDiff * (Math.PI/2) / 1000;
+            circle_back.rotate(angleDiff);
+            circle.rotate(angleDiff);
+          },_layer));
+          
+        SPIN_ANIM.start();
+        
+        var outline = new Kinetic.Circle({
+          x: _x,
+          y: _y,
+          radius: _radius,
+          stroke: 'black',
+          strokeWidth: 2,
+        });
+
+        //Ensures that a click on either object spins it
+        outline.on('mouseout', function(){
+          circle.setFill('black');
+          circle_back.setFill('black');
+          _layer.draw();
+          
+          mouse_on = false;
+          
+          SPIN_ANIM.start();
+          if ( SPIN_SECOND_START.frame.time == 0 && SPIN_SECOND_END.frame.time == 0 && to_end )
+            SPIN_SECOND_END.start();
+        });
+
+        outline.on('mouseover', function(){
+          circle.setFill("#222");
+          circle_back.setFill("#222");
+          _layer.draw();
+          
+          mouse_on = true;
+          SPIN_ANIM.stop();
+        });
+        
+        outline.on('mousedown', function(){
+          if ( SPIN_SECOND_START.frame.time == 0 && SPIN_SECOND_END.frame.time == 0 && !to_end )
+            SPIN_SECOND_START.start();
+        });
+        
+        _layer.add(circle_back); 
+        _layer.add(circle);  
+         
+        _layer.add(outline);
+      
+      }
+      
+      drawCircle(MainLayer,20,20);
+      
+      stage.add(MainLayer);
+      
+    </script>
+  </body>
+</html>
