@@ -11,7 +11,7 @@
 
 var ZX_BOARD_DEBUG = false;
 
-ZX_Board = function( size, MODE = 1 ) {
+ZX_Board = function( size, MODE ) {
 
   //Private Variable Members 
   //CONSTSTANTS

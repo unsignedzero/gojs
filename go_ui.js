@@ -268,7 +268,7 @@ function createBoard( brdLayer, _x, _y, sideLength, div ){
   //Here we create the GO Board itself
   //clearLayer( brdLayer ); // Profit?
   var interfaceArray;
-  GO_UI_backendGOBoard = new ZX_Board(div+1);
+  GO_UI_backendGOBoard = new ZX_Board(div+1,1);
   drawGOBoard(                 brdLayer,_x,_y,sideLength,div);
   interfaceArray = layGoStones(brdLayer,_x,_y,sideLength,div);
 
