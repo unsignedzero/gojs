@@ -1,8 +1,8 @@
 ﻿/*Go board Engine
  *Created by = David Tran 
  *on 1-3-2013
- *Version 0.6.2.0
- *Last modified 1-10-2013
+ *Version 0.6.4.1
+ *Last modified 01-15-2013
  */
 
 //Array.prototype.clone = function() { return jQuery.extend(true,[],this); }
@@ -49,7 +49,7 @@ ZX_Board = function( size, MODE ) {
 
   if ( _MODE == 1 ){
     if ( MAX&1 )
-       _StoneCount = [ 1+(MAX>>1), 1+(MAX>>1) , 0 , 0];
+       _StoneCount = [ 2+(MAX>>1), 2+(MAX>>1) , 0 , 0];
     else
        _StoneCount = [ MAX>>1, MAX>>1 , 0 , 0];
   }

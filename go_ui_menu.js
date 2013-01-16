@@ -1,8 +1,8 @@
 /*Go board
  *Created by = David Tran 
  *on 01-11-2013
- *Version 0.6.2.0
- *Last modified 01-11-2013
+ *Version 0.6.4.1
+ *Last modified 01-15-2013
  */
 
 //////////////////////////////////////////////////////////////////////////////

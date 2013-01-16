@@ -1,7 +1,7 @@
 ﻿/*Created by David Tran (unsignedzero) twice
  *on 1-3-2013
- *Version 0.6.3.0
- *Last modified 1-12-2013
+ *Version 0.6.4.1
+ *Last modified 01-15-2013
  *This code draws an interactive GO board on the screen
  *allowing two users to play the game
  */
@@ -200,7 +200,8 @@ function layGoStones( _layer, _x, _y, _size, div ){
 
   var i,_grid_size   = ((div+1)*(div+1));
   var div_new        =   div+1;
-  var _radius        = Math.floor(_size / 25) + 1;
+  //var _radius        = Math.floor(_size / 25 ) + 1;
+  var _radius        = Math.floor(_size / 25 * 8/div) + 1;
   var interfaceArray = [];
   var temp;
   
@@ -272,13 +273,14 @@ function createBoard( brdLayer, _x, _y, sideLength, div ){
   drawGOBoard(                 brdLayer,_x,_y,sideLength,div);
   interfaceArray = layGoStones(brdLayer,_x,_y,sideLength,div);
 
-  drawCursor( GO_UI_cursorLayer , sideLength );
+  drawCursor( GO_UI_cursorLayer , sideLength , div );
   return interfaceArray;
 }
 
-function drawCursor( _layer , _size ){
+function drawCursor( _layer , _size , div ){
   //Creates the cursor
-  var sideLength  =  (Math.floor(_size / 25)<<1) + 3;
+  //var _radius        = Math.floor(_size / 25 * 8/div) + 1;
+  var sideLength  =  (Math.floor(_size / 25 * 8/div)<<1) + 3;
   var _x = 45 - (sideLength>>1);
   var _y = 45 - (sideLength>>1);
   
@@ -942,7 +944,7 @@ function drawUI( brdLayer, UILayer, CurTurnLayer ){
     GO_UI_curPStonePiece.setFill('white');
 
   //Draw the Actual GO Board
-  GO_UI_stoneBoard = createBoard( brdLayer,100,100,500,8);
+  GO_UI_stoneBoard = createBoard( brdLayer,100,100,500,7);
 }
 
 function WriteMsg( _layer, msg ){
