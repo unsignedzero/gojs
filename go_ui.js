@@ -1,7 +1,7 @@
 ﻿/*Created by David Tran (unsignedzero) twice
  *on 1-3-2013
- *Version 0.6.4.1
- *Last modified 01-15-2013
+ *Version 0.6.4.2
+ *Last modified 01-16-2013
  *This code draws an interactive GO board on the screen
  *allowing two users to play the game
  */
@@ -204,7 +204,10 @@ function layGoStones( _layer, _x, _y, _size, div ){
   var _radius        = Math.floor(_size / 25 * 8/div) + 1;
   var interfaceArray = [];
   var temp;
-  
+
+  if ( _radius > 23 ) 
+    _radius = 23;
+
   //Creates the clickable areas for the stones on the board
   for ( i = 0 ; i < _grid_size ; i++ ){
     temp = new Kinetic.Circle({
@@ -281,8 +284,11 @@ function drawCursor( _layer , _size , div ){
   //Creates the cursor
   //var _radius        = Math.floor(_size / 25 * 8/div) + 1;
   var sideLength  =  (Math.floor(_size / 25 * 8/div)<<1) + 3;
-  var _x = 45 - (sideLength>>1);
-  var _y = 45 - (sideLength>>1);
+  var _x = 55 - (sideLength>>1);
+  var _y = 55 - (sideLength>>1);
+
+  if ( sideLength > 47 )
+    sideLength = 47;
   
   _layer.setOpacity(0.0);
 
@@ -944,7 +950,7 @@ function drawUI( brdLayer, UILayer, CurTurnLayer ){
     GO_UI_curPStonePiece.setFill('white');
 
   //Draw the Actual GO Board
-  GO_UI_stoneBoard = createBoard( brdLayer,100,100,500,7);
+  GO_UI_stoneBoard = createBoard( brdLayer,100,100,500,19);
 }
 
 function WriteMsg( _layer, msg ){
