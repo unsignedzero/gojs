@@ -146,8 +146,10 @@
               frame.time = 0;
               circle_back.setRotation(circle.getRotation()+Math.PI);
               SPIN_SECOND_START.stop();
+              //outline.setFill('black');
               if ( !mouse_on ){
                 to_end  = false;
+                //outline.setFill('white');
                 SPIN_SECOND_END.start();
               }
               else
@@ -173,13 +175,10 @@
           },_layer));
           
         SPIN_ANIM.start();
-        
         var outline = new Kinetic.Circle({
           x: _x,
           y: _y,
-          radius: _radius,
-          stroke: 'black',
-          strokeWidth: 2,
+          radius: _radius, stroke: 'black', strokeWidth: 2,
         });
 
         //Ensures that a click on either object spins it
@@ -191,8 +190,10 @@
           mouse_on = false;
           
           SPIN_ANIM.start();
-          if ( SPIN_SECOND_START.frame.time == 0 && SPIN_SECOND_END.frame.time == 0 && to_end )
+          if ( SPIN_SECOND_START.frame.time == 0 && SPIN_SECOND_END.frame.time == 0 && to_end ){
+            //outline.setFill('white');
             SPIN_SECOND_END.start();
+            }
         });
 
         outline.on('mouseover', function(){
@@ -208,6 +209,9 @@
           if ( SPIN_SECOND_START.frame.time == 0 && SPIN_SECOND_END.frame.time == 0 && !to_end )
             SPIN_SECOND_START.start();
         });
+
+        //circle_back.setZIndex(5);
+        //circle.setZIndex(7);
         
         _layer.add(circle_back); 
         _layer.add(circle);  

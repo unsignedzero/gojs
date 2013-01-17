@@ -34,6 +34,7 @@ Created by unsignedzero and started on 12-28-2012 as an idea.
 * * Create non-anim version
 
 ## Version ##
+* UI allows players to pass and can detect end game. (No calculations just yet.)
 * Updated README with version printout and changelogs
 * #### 0.6.4.2 [01-16-2013] #
 * Bugfix, Fixed stone resizing so that they don't overlap with the right-column UI when they are too large

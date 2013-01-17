@@ -1,7 +1,7 @@
 ﻿/*Created by David Tran (unsignedzero) twice
  *on 1-3-2013
  *Version 0.6.4.2
- *Last modified 01-16-2013
+ *Last modified 01-17-2013
  *This code draws an interactive GO board on the screen
  *allowing two users to play the game
  */
@@ -284,8 +284,8 @@ function drawCursor( _layer , _size , div ){
   //Creates the cursor
   //var _radius        = Math.floor(_size / 25 * 8/div) + 1;
   var sideLength  =  (Math.floor(_size / 25 * 8/div)<<1) + 3;
-  var _x = 55 - (sideLength>>1);
-  var _y = 55 - (sideLength>>1);
+  var _x = 48 - (sideLength>>1);
+  var _y = 48 - (sideLength>>1);
 
   if ( sideLength > 47 )
     sideLength = 47;
@@ -298,7 +298,13 @@ function drawCursor( _layer , _size , div ){
     width:       sideLength,
     height:      sideLength,
     stroke:      'red',
+    fill:        '#777',
+    opacity:     0.5,
     strokeWidth: 2,
+  });
+  
+  GO_UI_cursor.on('mousedown', function() {
+    passTurn();
   });
 
   if ( GO_UI_ANIM ){
@@ -353,9 +359,9 @@ function clearLayer( _layer ){
 
 function drawPStoneUI( CurTurnLayer ){
 /////Draw Upper Left UI Element (player counter)
-  // This IS hard coded (postionally!)
+  // This IS hard coded in a certain space
 
-  temp = new Kinetic.Rect({
+  var temp = new Kinetic.Rect({
     x:            45,
     y:            10,
     width:        70,
@@ -425,6 +431,8 @@ function drawPStoneUI( CurTurnLayer ){
   }, CurTurnLayer);
 
   GO_UI_curPStoneAnim.half = false;
+  
+  GO_UI_curPStonePiece.hasPassed = false;
 
   //Creates the animation for clicking the piece in the upper left
   //This will fade (in and out) the right column UI if GO_UI_ANIM is true
@@ -628,23 +636,7 @@ function drawColumnUI( UILayer ){
   UILayer.add(temp);
 }
 
-function checkValidMove( pos, color_id ){
-  //Checks IF the click is valid and PStoneUI, as needed
-  var stoneCount;
-  var i, max;
-  var valid = true;
-  
-  //Call code to check
-  valid = GO_UI_backendGOBoard.isValidMove(pos, color_id);
-  
-  if ( !valid )
-    return false
-
-  //Update board
-  GO_UI_stoneBoard[pos].color = color_id;
-
-  updateBoard(GO_UI_backendGOBoard.curState());
-
+function updatePStoneUI( CurTurnLayer ){
   //Changes the color piece in the PStoneUI
   if ( GO_UI_ANIM ){
 
@@ -660,8 +652,49 @@ function checkValidMove( pos, color_id ){
   }
   else{
     GO_UI_curPStonePiece.setFill( GO_UI_curPStonePiece.getFill() == 'white' ? 'black' : 'white'); 
-    GO_UI_CurTurnLayer.draw();
+    CurTurnLayer.draw();
   }
+}
+
+function passTurn(){
+  //Allows players to pass a turn
+  
+  //Check if this is the end
+  if ( GO_UI_curPStonePiece.hasPassed ){
+    //Prompt for end game?
+    
+    //End game calculations
+    loadPauseScreen();
+  }
+  
+  GO_UI_curPStonePiece.hasPassed = true;
+
+  //Prompt it?
+
+  //Redraw Stone
+  updatePStoneUI( GO_UI_CurTurnLayer );
+  
+  GO_UI_curPTurn ^=1;
+}
+
+function checkValidMove( pos, color_id ){
+  //Checks IF the click is valid and PStoneUI, as needed
+  var stoneCount;
+  var i, max;
+  var valid = true;
+  
+  //Call code to check
+  valid = GO_UI_backendGOBoard.isValidMove(pos, color_id);
+  
+  if ( !valid )
+    return false
+
+  //Update grid
+  GO_UI_stoneBoard[pos].color = color_id;
+
+  updateBoard(GO_UI_backendGOBoard.curState());
+
+  updatePStoneUI( GO_UI_CurTurnLayer );
 
   //Update Stone Count
   stoneCount = GO_UI_backendGOBoard.stoneCount();
@@ -950,7 +983,7 @@ function drawUI( brdLayer, UILayer, CurTurnLayer ){
     GO_UI_curPStonePiece.setFill('white');
 
   //Draw the Actual GO Board
-  GO_UI_stoneBoard = createBoard( brdLayer,100,100,500,19);
+  GO_UI_stoneBoard = createBoard( brdLayer,100,100,500,8);
 }
 
 function WriteMsg( _layer, msg ){
@@ -1000,9 +1033,10 @@ function externStartUI(){
   GO_UI_stage.add(GO_UI_msgLayer);
   GO_UI_stage.add(GO_UI_UILayer);
   
-  GO_UI_stage.add(GO_UI_cursorLayer);
+  
   GO_UI_stage.add(GO_UI_brdLayer);
   GO_UI_stage.add(GO_UI_FadeLayer);
+  GO_UI_stage.add(GO_UI_cursorLayer);
   
   GO_UI_stage.add(GO_UI_CurTurnLayer);
   
