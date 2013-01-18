@@ -17,14 +17,14 @@ Created by unsignedzero and started on 12-28-2012 as an idea.
 * ## GO UI ##
 * * unpollute General Namespace
 * * Add gradient to the stones for realism (0%)
-* * Add in-game timer (0%)
+* * Add in-game timer (100%)
 * * Change Right Column?
 * * * Add logo?
 * * * Add Turn Counter? 
 * #### GO Engine #
 * * Account for Kos (80%)
 * * Allow for prisoner exchanges (0%)
-* * Add end game checker and scoring (0%)
+* * Add end game checker and scoring (100%)
 * #### GO Title #
 * 1. Create Menu Outline (DONE)
 * 2. Add to spinner page (DONE)
@@ -34,6 +34,10 @@ Created by unsignedzero and started on 12-28-2012 as an idea.
 * * Create non-anim version
 
 ## Version ##
+* #### 0.6.5.0 [01-17-2013] #
+* Added end-game score calculation into Board Object
+* Added passing, as a move option.
+* Added in-game clock (accurate to MS)
 * UI allows players to pass and can detect end game. (No calculations just yet.)
 * Updated README with version printout and changelogs
 * #### 0.6.4.2 [01-16-2013] #

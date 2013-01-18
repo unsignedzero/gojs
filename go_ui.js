@@ -1,6 +1,6 @@
 ﻿/*Created by David Tran (unsignedzero) twice
  *on 1-3-2013
- *Version 0.6.4.2
+ *Version 0.6.5.0
  *Last modified 01-17-2013
  *This code draws an interactive GO board on the screen
  *allowing two users to play the game
@@ -38,6 +38,9 @@ var GO_UI_statusObj = [];
 var GO_UI_PauseButton;
 var GO_UI_PauseBack;
 
+//Clock Object
+var GO_UI_Clock;
+
 //Animation Values
 var captureFade = 500;
 
@@ -47,6 +50,7 @@ var GO_UI_stage = new Kinetic.Stage({
   height: 700
 });
 
+var GO_UI_devNullLayer = new Kinetic.Layer();
 var GO_UI_pauseLayer   = new Kinetic.Layer();
 var GO_UI_cursorLayer  = new Kinetic.Layer();
 var GO_UI_brdLayer     = new Kinetic.Layer();
@@ -54,6 +58,7 @@ var GO_UI_msgLayer     = new Kinetic.Layer();
 var GO_UI_UILayer      = new Kinetic.Layer();
 var GO_UI_FadeLayer    = new Kinetic.Layer();
 var GO_UI_CurTurnLayer = new Kinetic.Layer();
+
 
 function drawGOBoard( _layer, _x, _y, _size, div){
   //Draws the GO Board Background and the labels
@@ -662,12 +667,41 @@ function passTurn(){
   //Check if this is the end
   if ( GO_UI_curPStonePiece.hasPassed ){
     //Prompt for end game?
-    
+
+
+    //Cover Board area (to hide changes)
+
     //End game calculations
+    var score = GO_UI_backendGOBoard.endGame();
+
+    //Update Board (to show territory)
+
+    //Fade Layer?
+    if ( GO_UI_ANIM ){
+    }
+    else{
+    }
+
+    //Show stats and ask for new game?
+    if ( GO_UI_ANIM ){
+    }
+    else{
+    }
+
+    //TEMP OUTPUT
+    var temp_output = "Game time: " + (GO_UI_Clock.frame.time/1000) + "s | ";
+    temp_output += "White:" + score[0] + " Black:" + score[1];
+    externWriteMsg(temp_output);
+    
     loadPauseScreen();
+
+    GO_UI_backendGOBoard.hasPassed = false;
+
+    //Reset Screen
+
   }
-  
-  GO_UI_curPStonePiece.hasPassed = true;
+  else
+    GO_UI_curPStonePiece.hasPassed = true;
 
   //Prompt it?
 
@@ -687,7 +721,9 @@ function checkValidMove( pos, color_id ){
   valid = GO_UI_backendGOBoard.isValidMove(pos, color_id);
   
   if ( !valid )
-    return false
+    return false;
+    
+  GO_UI_curPStonePiece.hasPassed = false;
 
   //Update grid
   GO_UI_stoneBoard[pos].color = color_id;
@@ -1021,9 +1057,28 @@ function startAfterFade(){
   drawPauseScreen(GO_UI_pauseLayer);
 }
 
+function setBackground(){
+  //Here we set up all miscellaneous/background work
+  //that will be done for the game
+
+  //Setup Clock
+  //frame.time increases per millisecond
+  var hour = 1000*60*60;
+
+  GO_UI_Clock = new Kinetic.Animation( function(frame){
+    if ( frame.time >= hour )
+      frame.time = 0;
+  }, GO_UI_devNullLayer);
+
+  GO_UI_Clock.start();
+}
+
 function externStartUI(){
   //Add our full UI
   drawUI( GO_UI_brdLayer, GO_UI_UILayer, GO_UI_CurTurnLayer );
+
+  //Startup Background Work
+  setBackground();
 
   //Add the layers to the GO_UI_stage
   //Remember first add is the lowest layer
@@ -1032,7 +1087,6 @@ function externStartUI(){
 
   GO_UI_stage.add(GO_UI_msgLayer);
   GO_UI_stage.add(GO_UI_UILayer);
-  
   
   GO_UI_stage.add(GO_UI_brdLayer);
   GO_UI_stage.add(GO_UI_FadeLayer);

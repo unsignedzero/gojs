@@ -1,8 +1,8 @@
 ﻿/*Go board Engine
  *Created by = David Tran 
  *on 1-3-2013
- *Version 0.6.4.1
- *Last modified 01-15-2013
+ *Version 0.6.5.0
+ *Last modified 01-17-2013
  */
 
 //Array.prototype.clone = function() { return jQuery.extend(true,[],this); }
@@ -22,8 +22,9 @@ ZX_Board = function( size, MODE ) {
   var NEUTRAL_PIECE = 100;
 
   var _MODE = MODE;
-  /*0 UNLIMITED, no stone counter
-   *1 REAL,      stones are acounted for
+  /*0 Free, no rules
+   *1 Stone Limiter, There are only a finite amount of stones
+   *2 KO, KO blocked
    */
   
   //Local
@@ -45,9 +46,9 @@ ZX_Board = function( size, MODE ) {
   //Constructor WORK
 
   for( i = 0 ; i < MAX ; i++ )
-    _Board[i] = EMPTY_PIECE;
+    _Board.push(EMPTY_PIECE);
 
-  if ( _MODE == 1 ){
+  if ( _MODE&1 ){
     if ( MAX&1 )
        _StoneCount = [ 2+(MAX>>1), 2+(MAX>>1) , 0 , 0];
     else
@@ -97,7 +98,11 @@ ZX_Board = function( size, MODE ) {
   function cloneBoard(){
     //Returns a deep copy of the board
 
-    return $.extend(true,[],_Board);
+    var newBoard = [];
+    for( i = 0 ; i < MAX ; i++ )
+      newBoard.push(_Board[i]);
+    //return $.extend(true,[],_Board);
+    return newBoard;
   };
   
   function cloneStoneCount(){
@@ -106,12 +111,43 @@ ZX_Board = function( size, MODE ) {
     return $.extend(true,[],_StoneCount);
   };
 
+  function resizeBoard( size ){
+
+    BOARD_SIZE    = size;
+    MAX           = BOARD_SIZE * BOARD_SIZE;
+
+    _Board = [];
+
+    for ( i = 0; i < MAX ; i++ ){
+      _Board.push( EMPTY_PIECE );
+    }
+
+    clearSupport();
+
+  };
+
   function clearBoard(){
     //Clears the board
 
     for ( i = 0; i < MAX ; i++ ){
       _Board[i] = EMPTY_PIECE;
     }
+
+    clearSupport();
+
+  };
+
+  function clearSupport(){
+    if ( _MODE&1 ){
+      if ( MAX&1 )
+         _StoneCount = [ 2+(MAX>>1), 2+(MAX>>1) , 0 , 0];
+      else
+         _StoneCount = [ MAX>>1, MAX>>1 , 0 , 0];
+    }
+
+    _History    = {};
+
+    _BoardHash  = {};
   };
 
   function canRemoveStones( pos ){
@@ -204,6 +240,101 @@ ZX_Board = function( size, MODE ) {
     return false;
   };
 
+  function endGameCalc(){
+    var P1Score, P2Score, hasP1, hasP2, P1STONE, P2STONE;
+    var i, j, k, blanksLeft, piecesToColor, roundPieceLeft;
+
+    P1STONE = 1;
+    P2STONE = 2;
+
+    P1Score = 0;
+    P2Score = 0;
+
+    var emptySpot      = [];
+    var newEmptySpot   = [];
+    var updateSpot     = [];
+    var updateColor    = [];
+
+    //Find all empty spots and add it
+    for( i = 0 ; i < MAX ; i++ )
+      if ( _Board[i] == EMPTY_PIECE )
+        emptySpot.push(i);
+
+    //Algorithm for updating the squares
+    blanksLeft = emptySpot.length;
+
+    do{
+      
+      //For every blanksquare
+      roundPieceLeft = emptySpot.length;
+      while( roundPieceLeft ){
+        roundPieceLeft -= 1;
+        i = emptySpot.shift();
+
+        hasP1 = hasP2 = false;
+
+        //For every possible neighbor
+        for( j = 0 ; j < directionCount ; j++ ){
+          if ( ( k = direction[j](i) ) != -1 ){
+            if ( _Board[k] == P1STONE ){
+              //alert("At pos" + i );
+              hasP1 = true;
+            }
+            else if ( _Board[k] == P2STONE ){
+              hasP2 = true;
+            }
+          }
+        }
+
+        //Update on result
+        if ( hasP1 || hasP2 ){
+          //alert( "hasP1 is " + hasP1 );
+          blanksLeft -=1;
+        }
+
+        //What do we see?
+        if ( !hasP1 && !hasP2 ){
+          newEmptySpot.push(i);
+        }
+        else if (  hasP1 && !hasP2 ){
+          P1Score += 1;
+          updateSpot.push(i);
+          updateColor.push(P1STONE);
+        }
+        else if ( !hasP1 && hasP2 ){
+          P2Score += 1;
+          updateSpot.push(i);
+          updateColor.push(P2STONE);
+        }
+        else if ( hasP1 && hasP2 ){
+          updateSpot.push(i);
+          updateColor.push(NEUTRAL_PIECE);
+        }
+
+      }
+
+      //Add in the new pieces
+      piecesToColor = updateSpot.length;
+
+      for( i = 0 ; i < piecesToColor ; i++ ){
+        _Board[updateSpot.shift()] = updateColor.shift();
+      }
+
+      //Update blanksLeft
+      
+      emptySpot    = newEmptySpot;
+      newEmptySpot = [];
+
+    }while( blanksLeft );
+
+    //Account for prisoners
+
+    P1Score += _StoneCount[3];
+    P2Score += _StoneCount[2];
+
+    return [ P1Score , P2Score ];
+  };
+
   /***************************************************************************/
   /////Privileged Members
 
@@ -267,7 +398,7 @@ ZX_Board = function( size, MODE ) {
       return false;
 
     //Out of stone
-    if ( _MODE == 1 && _StoneCount[colorPiece] == 0 )
+    if ( (  _MODE & 1) && _StoneCount[colorPiece] == 0 )
       return false;
 
     isValid = true;
@@ -276,7 +407,7 @@ ZX_Board = function( size, MODE ) {
     _Board[pos] = color;
     
     //Check Hash
-    if ( _MODE == 1 ){
+    if ( _MODE&2 ){
     }
 
     //Will this move be suicidal?
@@ -298,7 +429,7 @@ ZX_Board = function( size, MODE ) {
       //alert("FAILED");
       _Board[pos] = EMPTY_PIECE;
     }
-    else if ( _MODE == 1 ){
+    else if ( _MODE&1 ){
       //Update Stone Count
       _StoneCount[        colorPiece  ] -= 1;
       _StoneCount[ 2 + (1^colorPiece) ] += stoneCapture;
@@ -307,6 +438,12 @@ ZX_Board = function( size, MODE ) {
     }
     return isValid;
   };
+
+  this.endGame = function (){
+    var output = endGameCalc();
+    clearBoard();
+    return output;
+  }
 
 }
 
