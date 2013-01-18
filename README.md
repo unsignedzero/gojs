@@ -34,6 +34,7 @@ Created by unsignedzero and started on 12-28-2012 as an idea.
 * * Create non-anim version
 
 ## Version ##
+* Bugfix, clock reset after each game.
 * #### 0.6.5.0 [01-17-2013] #
 * Added end-game score calculation into Board Object
 * Added passing, as a move option.

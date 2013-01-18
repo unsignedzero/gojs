@@ -693,6 +693,11 @@ function passTurn(){
     temp_output += "White:" + score[0] + " Black:" + score[1];
     externWriteMsg(temp_output);
     
+    //Reset the clock (will be completed later)
+    GO_UI_Clock.stop();
+    GO_UI_Clock.frame.clock = 0;
+    GO_UI_Clock.start();
+
     loadPauseScreen();
 
     GO_UI_backendGOBoard.hasPassed = false;
