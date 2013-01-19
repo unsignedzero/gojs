@@ -38,6 +38,8 @@ Created by unsignedzero and started on 12-28-2012 as an idea.
 
 # Version #
 
+* Fixed Permissions so it works on all unix boxes
+
 #### 0.7.0.0 [01-19-2013] #
 * Added comment for functions created since 0.6.5.0
 * Added "clean up" of each end game so board can be reused
