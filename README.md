@@ -16,7 +16,7 @@ Created by unsignedzero and started on 12-28-2012 as an idea.
 # TO DO #
 #### GO UI #
 
-* unpollute General Namespace (100%)
+* unpollute General Namespace (DONE)
 * Add gradient to the stones for realism (0%)
 * Add in-game timer (100%)
 * Change Right Column?
@@ -26,7 +26,7 @@ Created by unsignedzero and started on 12-28-2012 as an idea.
 #### GO Engine #
 * Account for Kos (80%)
 * Allow for prisoner exchanges (0%)
-* Add end game checker and scoring (100%)
+* Add end game checker and scoring (DONE)
 
 #### GO Title #
 1. Create Menu Outline (DONE)
@@ -37,6 +37,14 @@ Created by unsignedzero and started on 12-28-2012 as an idea.
 * Create non-anim version
 
 # Version #
+
+#### 0.7.0.0 [01-19-2013] #
+* Added comment for functions created since 0.6.5.0
+* Added "clean up" of each end game so board can be reused
+* Bugfix, End-game calculation does NOT loop infinitely due to empty board
+* Captured territories now shown as squares, rather than nothing
+* Non-anim version of end game working
+* Bugfix, Readme corrected syntax issue
 
 #### 0.6.6.0 [01-18-2013] #
 * Added scope for the UI

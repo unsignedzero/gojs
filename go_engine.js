@@ -1,11 +1,9 @@
 ﻿/*Go board Engine
  *Created by = David Tran 
  *on 1-3-2013
- *Version 0.6.6.0
- *Last modified 01-18-2013
+ *Version 0.7.0.0
+ *Last modified 01-19-2013
  */
-
-//Array.prototype.clone = function() { return jQuery.extend(true,[],this); }
 
 //Board Class
 
@@ -106,12 +104,13 @@ ZX_GO_Board = function( size, MODE ) {
   };
   
   function cloneStoneCount(){
-    //Returns a deep copy of the array passed in
+    //Returns a deep copy of the StoneCount
 
     return $.extend(true,[],_StoneCount);
   };
 
   function resizeBoard( size ){
+    //Resizes the interal board
 
     BOARD_SIZE    = size;
     MAX           = BOARD_SIZE * BOARD_SIZE;
@@ -134,10 +133,10 @@ ZX_GO_Board = function( size, MODE ) {
     }
 
     clearSupport();
-
   };
 
   function clearSupport(){
+    //Cleans up the board's extra data
     if ( _MODE&1 ){
       if ( MAX&1 )
          _StoneCount = [ 2+(MAX>>1), 2+(MAX>>1) , 0 , 0];
@@ -159,9 +158,10 @@ ZX_GO_Board = function( size, MODE ) {
   };
 
   function stoneRemover( color, pos ){
-    //Preforms a flood fill at pos, changing all color to EMPTY_PIECE
-    //We flood fill using left hand orientation
-    //https://en.wikipedia.org/wiki/Flood_fill
+    /*Preforms a flood fill at pos, changing all color to EMPTY_PIECE
+     *We flood fill using left hand orientation
+     *https://en.wikipedia.org/wiki/Flood_fill
+     */
 
     var queue = [];
     var count = 0;
@@ -170,7 +170,7 @@ ZX_GO_Board = function( size, MODE ) {
     queue.push(pos);
 
     while ( queue.length != 0 ){
-      pos = queue.shift();
+      pos = queue.pop();
       if ( pos != -1 && _Board[pos] == color ){
         count +=1;
         _Board[pos] = EMPTY_PIECE;
@@ -202,10 +202,11 @@ ZX_GO_Board = function( size, MODE ) {
   };
   
   function libertyCheck ( color, pos ){
-    //Preforms a flood fill at pos, checking if we have any liberty
-    //Returning true means we have at least one free liberty
-    //We flood fill using left hand orientation
-    //https://en.wikipedia.org/wiki/Flood_fill
+    /*Preforms a flood fill at pos, checking if we have any liberty
+     *Returning true means we have at least one free liberty
+     *We flood fill using left hand orientation
+     *https://en.wikipedia.org/wiki/Flood_fill
+     */
 
     var local_board = cloneBoard();
     var queue = [];
@@ -215,7 +216,7 @@ ZX_GO_Board = function( size, MODE ) {
 
     while ( queue.length != 0 ){
       //alert("Start node =" + pos);
-      pos = queue.shift();
+      pos = queue.pop();
       if ( pos != -1 ){
         if( local_board[pos] == EMPTY_PIECE ){
           if (ZX_BOARD_DEBUG){
@@ -241,8 +242,13 @@ ZX_GO_Board = function( size, MODE ) {
   };
 
   function endGameCalc(){
+    /*Preforms a breadth first search on the board
+     *to calculate territory
+     */
+     
     var P1Score, P2Score, hasP1, hasP2, P1STONE, P2STONE;
     var i, j, k, blanksLeft, piecesToColor, roundPieceLeft;
+    var lastblanksLeft;
 
     P1STONE = 1;
     P2STONE = 2;
@@ -264,12 +270,14 @@ ZX_GO_Board = function( size, MODE ) {
     blanksLeft = emptySpot.length;
 
     do{
+    
+      lastblanksLeft = blanksLeft;
       
       //For every blanksquare
       roundPieceLeft = emptySpot.length;
       while( roundPieceLeft ){
         roundPieceLeft -= 1;
-        i = emptySpot.shift();
+        i = emptySpot.pop();
 
         hasP1 = hasP2 = false;
 
@@ -312,16 +320,20 @@ ZX_GO_Board = function( size, MODE ) {
         }
 
       }
+      
+      //If we made no progress escape
+      if ( lastblanksLeft == blanksLeft ){
+        //alert("BLANK BOARD");
+        break;
+      }
 
       //Add in the new pieces
       piecesToColor = updateSpot.length;
 
       for( i = 0 ; i < piecesToColor ; i++ ){
-        _Board[updateSpot.shift()] = updateColor.shift();
+        _Board[updateSpot.pop()] = updateColor.pop();
       }
 
-      //Update blanksLeft
-      
       emptySpot    = newEmptySpot;
       newEmptySpot = [];
 
@@ -440,9 +452,10 @@ ZX_GO_Board = function( size, MODE ) {
   };
 
   this.endGame = function (){
+    //Ends the game and calculates score
     var output = endGameCalc();
     var a = cloneBoard();
-    //alert( finalBoard );
+
     clearBoard();
     return [output,a];
   }
