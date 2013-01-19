@@ -1,8 +1,8 @@
 ﻿/*Go board Engine
  *Created by = David Tran 
  *on 1-3-2013
- *Version 0.6.5.0
- *Last modified 01-17-2013
+ *Version 0.6.6.0
+ *Last modified 01-18-2013
  */
 
 //Array.prototype.clone = function() { return jQuery.extend(true,[],this); }
@@ -11,7 +11,7 @@
 
 var ZX_BOARD_DEBUG = false;
 
-ZX_Board = function( size, MODE ) {
+ZX_GO_Board = function( size, MODE ) {
 
   //Private Variable Members 
   //CONSTSTANTS
@@ -441,13 +441,15 @@ ZX_Board = function( size, MODE ) {
 
   this.endGame = function (){
     var output = endGameCalc();
+    var a = cloneBoard();
+    //alert( finalBoard );
     clearBoard();
-    return output;
+    return [output,a];
   }
 
 }
 
-ZX_Board.prototype = {
+ZX_GO_Board.prototype = {
   //Public Methods
   //function_name: function(){
 

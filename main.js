@@ -1,21 +1,13 @@
 ﻿//Main for the GO Game
   
-//Check if the backend exists
-if ( ( ZX_Board == undefined ) ||
-     ( typeof(ZX_Board) != 'function') 
-   ){
+if ( ( ZX_GO_Board == undefined ) || ( typeof(ZX_GO_Board) != 'function') ){
   alert("GO backend does not exist. Halting Execution.");
   throw new Error("go_engine.js missing");
 }
-else if ( GO_UI_DEBUG ){
-  GO_UI_backendGOBoard.draw();
-}
 
-//Check if we can draw
-if ( ( externStartUI == undefined ) ||
-     ( typeof(externStartUI) != 'function') ){ 
+if ( ( ZX_GO_UI == undefined ) || ( typeof(ZX_GO_UI) != 'object') ){ 
   alert("GO frontend does not exist. Halting Execution.");
   throw new Error("go_ui.js missing");
 }
 
-externStartUI();
+ZX_GO_UI.StartUI();
