@@ -38,6 +38,7 @@ Created by unsignedzero and started on 12-28-2012 as an idea.
 
 # Version #
 
+* Added outline for mobile support
 * Fixed Permissions so it works on all unix boxes
 
 #### 0.7.0.0 [01-19-2013] #

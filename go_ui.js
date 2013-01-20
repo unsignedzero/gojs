@@ -1,7 +1,7 @@
-﻿/*Created by David Tran (unsignedzero) twice
+/*Created by David Tran (unsignedzero) twice
  *on 1-3-2013
  *Version 0.7.0.0
- *Last modified 01-19-2013
+ *Last modified 01-20-2013
  *This code draws an interactive GO board on the screen
  *allowing two users to play the game
  */
@@ -239,7 +239,7 @@ var ZX_GO_UI = (function(){
     var interfaceArray = [];
     var temp;
 
-    if ( _radius > 23 ) 
+    if ( !isMobile() && _radius > 23 ) 
       _radius = 23;
 
     //Creates the clickable areas for the stones on the board
@@ -264,7 +264,7 @@ var ZX_GO_UI = (function(){
 
       //Modify this for the click area
       //GO_UI_CLICK
-      temp.on('mousedown', function() {
+      temp.on('mousedown dbltap', function() {
         if (this.getOpacity() == 0 ){
 
           if ( checkValidMove(this.posID, GO_UI_curPTurn + 1 ) ){
@@ -483,7 +483,7 @@ var ZX_GO_UI = (function(){
     
     var sideLength  =  (Math.floor(_size / 25 * 8/div)<<1) + 3;
     
-    if ( sideLength > 47 )
+    if ( !isMobile() && sideLength > 47 )
       sideLength = 47;
     
     var _x = 48;
@@ -518,7 +518,7 @@ var ZX_GO_UI = (function(){
       GO_UI_cursorAnim.frame.time = 0;
     }
  
-    GO_UI_cursor.on('mousedown', function() {
+    GO_UI_cursor.on('mousedown dbltap', function() {
       if ( GO_UI_cursorAnim.frame.time == 0 )
         passTurn();
     });
@@ -584,7 +584,7 @@ var ZX_GO_UI = (function(){
     });
 
     //Click event for the "grey" back
-    temp.on( 'mousedown', function(){
+    temp.on( 'mousedown touchmove', function(){
       /*
       var _width = $(window).width(); 
       var _height = $(window).height();
@@ -644,7 +644,7 @@ var ZX_GO_UI = (function(){
     //Creates the animation for clicking the piece in the upper left
     //This will fade (in and out) the right column UI if GO_UI_ANIM is true
     //else instantly change it
-    GO_UI_curPStonePiece.on('mousedown', function(){
+    GO_UI_curPStonePiece.on('mousedown tap', function(){
       //Case A we use animation to make it work
       if ( GO_UI_ANIM ){
         var UI_shrink = new Kinetic.Animation(function(frame) {
@@ -711,7 +711,7 @@ var ZX_GO_UI = (function(){
     }
   };
   
-  function drawColumnUI( UILayer ){
+  function drawColumnUI( UILayer , shiftx, shifty, scaley){
    //Draws the right column UI (for future use) and other non-board UI
     var _x, _y, _width, _height, _font, _fontSize, _radius;
     var _stonePad, _textPad, _statusy;
@@ -720,8 +720,8 @@ var ZX_GO_UI = (function(){
     var curY;
     var i, max, j, max_j;
 
-    _x           = 630;
-    _y           =  20;
+    _x           = 630 + (shiftx == undefined ? 0 : shiftx);
+    _y           =  20 + (shifty == undefined ? 0 : shifty);
     _width       = 160;
     _height      = 560;
     _font        = 'Calibri';
@@ -1112,7 +1112,7 @@ var ZX_GO_UI = (function(){
       
       fontSize:      60,
       font:          'Calibri',
-      text:          'Paused',
+      text:          'Another game?',
     });
     
     temp.setOffset({
@@ -1132,7 +1132,7 @@ var ZX_GO_UI = (function(){
       
       fontSize:      40,
       font:          'Calibri',
-      text:          'Continue',
+      text:          'Yes',
     });
 
     temp.setOffset({
@@ -1174,7 +1174,7 @@ var ZX_GO_UI = (function(){
       }
     });
     
-    GO_UI_PauseButton.on('mousedown', function(){
+    GO_UI_PauseButton.on('mousedown tap', function(){
       if ( GO_UI_ANIM && !GO_UI_PauseButton.inAnim ){
         GO_UI_PauseButton.inAnim = true;
         (new Kinetic.Animation(function(frame){
@@ -1250,10 +1250,10 @@ var ZX_GO_UI = (function(){
 
 ///////////////////////////////////////////////////////////////////////////// 
 //"Main" Functions
-  function drawUI( brdLayer, UILayer, CurTurnLayer ){
+  function drawUI( brdLayer, UILayer, CurTurnLayer ,addx , addy){
     //Creates the full UI
 
-    drawColumnUI( UILayer );
+    drawColumnUI( UILayer , addx, 0, addy);
     drawPStoneUI( CurTurnLayer );
 
     //Start initial animation or correct initial color
@@ -1263,7 +1263,7 @@ var ZX_GO_UI = (function(){
       GO_UI_curPStonePiece.setFill('white');
 
     //Draw the Actual GO Board
-    GO_UI_stoneBoard = createBoard( brdLayer,100,100,500,8);
+    GO_UI_stoneBoard = createBoard( brdLayer,100,100,500+addx,8);
   };
 
   function WriteMsg( _layer, msg ){
@@ -1314,8 +1314,23 @@ var ZX_GO_UI = (function(){
   };
 
   function externStartUI(){
+    //Check for mobile and resize as needed
+    var addx, addy;
+
+    if ( isMobile() ){
+      addx = 1500;
+      addy = 1500;
+      GO_UI_stage.setWidth(GO_UI_stage.getWidth()+addx);
+      GO_UI_stage.setHeight(GO_UI_stage.getHeight()+addy);
+      GO_UI_ANIM = false;
+    }
+    else{
+      addx = 0;
+      addy = 0;
+    }
     //Add our full UI
-    drawUI( GO_UI_brdLayer, GO_UI_UILayer, GO_UI_CurTurnLayer );
+    drawUI( GO_UI_brdLayer, GO_UI_UILayer, GO_UI_CurTurnLayer ,
+            addx , addy);
 
     //Startup Background Work
     setBackground();
@@ -1328,13 +1343,15 @@ var ZX_GO_UI = (function(){
     GO_UI_stage.add(GO_UI_scorePage);
 
     GO_UI_stage.add(GO_UI_msgLayer);
-    GO_UI_stage.add(GO_UI_UILayer);
+    if ( !isMobile() )
+      GO_UI_stage.add(GO_UI_UILayer);
     
     GO_UI_stage.add(GO_UI_brdLayer);
     GO_UI_stage.add(GO_UI_FadeLayer);
     GO_UI_stage.add(GO_UI_cursorLayer);
     
-    GO_UI_stage.add(GO_UI_CurTurnLayer);
+    if ( !isMobile() )
+      GO_UI_stage.add(GO_UI_CurTurnLayer);
     
     if ( GO_UI_ANIM ){
       GO_UI_stage.setOpacity(0.0);
