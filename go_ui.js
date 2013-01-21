@@ -1,7 +1,7 @@
 /*Created by David Tran (unsignedzero) twice
  *on 1-3-2013
- *Version 0.7.0.0
- *Last modified 01-20-2013
+ *Version 0.7.1.0
+ *Last modified 01-21-2013
  *This code draws an interactive GO board on the screen
  *allowing two users to play the game
  */
@@ -16,6 +16,11 @@ var ZX_GO_UI = (function(){
 
   var GO_UI_DEBUG = false;
   var GO_UI_ANIM  = true;
+  var GO_UI_BIG   = false;
+
+  if ( isMobile() ){
+    GO_UI_ANIM = false;
+  }
 
 //////////////////////////////////////////////////////////////////////////////
 
@@ -74,14 +79,17 @@ var ZX_GO_UI = (function(){
     _layer.removeChildren();
   };
 
-/////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
 //Code to create and support the GO Grid
  
-  function createBoard( brdLayer, _x, _y, sideLength, div ){
+  function createBoard( board_option, _x, _y){
     //Here we create the GO Board itself
+    var brdLayer   = board_option['brdLayer'];
+    var sideLength = 500 + board_option['addx'];
+    var div        = board_option['div'];
 
     var interfaceArray;
-    GO_UI_backendGOBoard = new ZX_GO_Board(div+1,1);
+    GO_UI_backendGOBoard = new ZX_GO_Board(div+1,board_option['MODE']);
     drawGOBoard(                 brdLayer,_x,_y,sideLength,div);
     interfaceArray = layGoStones(brdLayer,_x,_y,sideLength,div);
 
@@ -239,7 +247,7 @@ var ZX_GO_UI = (function(){
     var interfaceArray = [];
     var temp;
 
-    if ( !isMobile() && _radius > 23 ) 
+    if ( !GO_UI_BIG && _radius > 23 ) 
       _radius = 23;
 
     //Creates the clickable areas for the stones on the board
@@ -483,7 +491,7 @@ var ZX_GO_UI = (function(){
     
     var sideLength  =  (Math.floor(_size / 25 * 8/div)<<1) + 3;
     
-    if ( !isMobile() && sideLength > 47 )
+    if ( !GO_UI_BIG && sideLength > 47 )
       sideLength = 47;
     
     var _x = 48;
@@ -1250,11 +1258,11 @@ var ZX_GO_UI = (function(){
 
 ///////////////////////////////////////////////////////////////////////////// 
 //"Main" Functions
-  function drawUI( brdLayer, UILayer, CurTurnLayer ,addx , addy){
+  function drawUI( board_option ){
     //Creates the full UI
 
-    drawColumnUI( UILayer , addx, 0, addy);
-    drawPStoneUI( CurTurnLayer );
+    drawColumnUI( board_option['UILayer'] , board_option['addx'], 0, board_option['addy']);
+    drawPStoneUI( board_option['CurTurnLayer'] );
 
     //Start initial animation or correct initial color
     if ( GO_UI_ANIM )
@@ -1263,7 +1271,7 @@ var ZX_GO_UI = (function(){
       GO_UI_curPStonePiece.setFill('white');
 
     //Draw the Actual GO Board
-    GO_UI_stoneBoard = createBoard( brdLayer,100,100,500+addx,8);
+    GO_UI_stoneBoard = createBoard( board_option,100,100 );
   };
 
   function WriteMsg( _layer, msg ){
@@ -1306,18 +1314,18 @@ var ZX_GO_UI = (function(){
 
   function externCreateBoard( div, MODE ){
     //Creates the new board, NOT TESTED
-    //GO_UI_backendGOBoard = new ZX_GO_Board(div+1,1);
     GO_UI_backendGOBoard.resizeBoard(div);
     GO_UI_brdLayer.removeChildren();
     GO_UI_brdLayer.draw();
-    GO_UI_stoneBoard = createBoard( GO_UI_brdLayer, 100,100,500,div);
+    GO_UI_stoneBoard = createBoard( {'brdLayer':GO_UI_brdLayer, 'addx':0, 'addy':0, 'div':div}
+      , 100,100);
   };
 
-  function externStartUI(){
+  function externStartUI( board_option ){
     //Check for mobile and resize as needed
     var addx, addy;
 
-    if ( isMobile() ){
+    if ( GO_UI_BIG ){
       addx = 1500;
       addy = 1500;
       GO_UI_stage.setWidth(GO_UI_stage.getWidth()+addx);
@@ -1328,9 +1336,16 @@ var ZX_GO_UI = (function(){
       addx = 0;
       addy = 0;
     }
+
+    //Add to our board option
+    board_option['addx']         = addx;
+    board_option['addy']         = addy;
+    board_option['brdLayer']     = GO_UI_brdLayer;
+    board_option['UILayer']      = GO_UI_UILayer;
+    board_option['CurTurnLayer'] = GO_UI_CurTurnLayer;
+
     //Add our full UI
-    drawUI( GO_UI_brdLayer, GO_UI_UILayer, GO_UI_CurTurnLayer ,
-            addx , addy);
+    drawUI( board_option );
 
     //Startup Background Work
     setBackground();
@@ -1343,14 +1358,14 @@ var ZX_GO_UI = (function(){
     GO_UI_stage.add(GO_UI_scorePage);
 
     GO_UI_stage.add(GO_UI_msgLayer);
-    if ( !isMobile() )
+    if ( !GO_UI_BIG )
       GO_UI_stage.add(GO_UI_UILayer);
     
     GO_UI_stage.add(GO_UI_brdLayer);
     GO_UI_stage.add(GO_UI_FadeLayer);
     GO_UI_stage.add(GO_UI_cursorLayer);
     
-    if ( !isMobile() )
+    if ( !GO_UI_BIG )
       GO_UI_stage.add(GO_UI_CurTurnLayer);
     
     if ( GO_UI_ANIM ){
@@ -1393,9 +1408,15 @@ var ZX_GO_UI = (function(){
       WriteMsg(GO_UI_msgLayer, "CreateBoard called. Too few divs" ); 
   };
 
-  this.StartUI = function(){
+  this.StartUI = function( div, MODE ){
+    //Filters div count and mode
+    if ( div  == undefined || div < 4 || div > 24 )
+      div  = 8;
+    if ( MODE == undefined )
+      MODE = 3;
+
     //Starts up our UI
-    externStartUI();
+    externStartUI( {div:div, MODE:MODE} );
   };
   
   //Public Methods

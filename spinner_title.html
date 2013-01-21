@@ -136,7 +136,7 @@
           },
         });
 
-        circle.on('mousedown', function(){
+        circle.on('mousedown tap', function(){
         });
         
         SPIN_SECOND_START = (new Kinetic.Animation(function(frame){
@@ -182,7 +182,7 @@
         });
 
         //Ensures that a click on either object spins it
-        outline.on('mouseout', function(){
+        outline.on('mouseout touchstart', function(){
           circle.setFill('black');
           circle_back.setFill('black');
           _layer.draw();
@@ -196,7 +196,7 @@
             }
         });
 
-        outline.on('mouseover', function(){
+        outline.on('mouseover touchmove', function(){
           circle.setFill("#222");
           circle_back.setFill("#222");
           _layer.draw();
@@ -205,7 +205,7 @@
           SPIN_ANIM.stop();
         });
         
-        outline.on('mousedown', function(){
+        outline.on('mousedown tap', function(){
           if ( SPIN_SECOND_START.frame.time == 0 && SPIN_SECOND_END.frame.time == 0 && !to_end )
             SPIN_SECOND_START.start();
         });

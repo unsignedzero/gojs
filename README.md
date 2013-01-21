@@ -24,7 +24,7 @@ Created by unsignedzero and started on 12-28-2012 as an idea.
 * * Add Turn Counter? 
 
 #### GO Engine #
-* Account for Kos (80%)
+* Account for Kos (100%)
 * Allow for prisoner exchanges (0%)
 * Add end game checker and scoring (DONE)
 
@@ -38,6 +38,11 @@ Created by unsignedzero and started on 12-28-2012 as an idea.
 
 # Version #
 
+#### 0.7.1.0 [01-21-2013] #
+* History Added (not used yet)
+* KO Support Added
+* Spinner tests work on mobile devices now
+* Mobile support fixed and working. 
 * Added outline for mobile support
 * Fixed Permissions so it works on all unix boxes
 

@@ -1,8 +1,8 @@
 ﻿/*Go board Engine
- *Created by = David Tran 
+ *Created by = David Tran
  *on 1-3-2013
- *Version 0.7.0.0
- *Last modified 01-19-2013
+ *Version 0.7.1.0
+ *Last modified 01-21-2013
  */
 
 //Board Class
@@ -11,7 +11,7 @@ var ZX_BOARD_DEBUG = false;
 
 ZX_GO_Board = function( size, MODE ) {
 
-  //Private Variable Members 
+  //Private Variable Members
   //CONSTSTANTS
   var BOARD_SIZE    = size;
   var MAX           = BOARD_SIZE * BOARD_SIZE;
@@ -23,24 +23,25 @@ ZX_GO_Board = function( size, MODE ) {
   /*0 Free, no rules
    *1 Stone Limiter, There are only a finite amount of stones
    *2 KO, KO blocked
+   *4 History, History added (not used yet)
    */
-  
+
   //Local
   var _Board      = [];
-  var _History    = {};
+  var _History    = [];
   var _BoardHash  = {};
 
   var _StoneCount;
-  
+
   //HELPER VAR
   var i;
 
   //Possible values of the board
-  /*var PLAYER_MAP = { 
-   *EMPTY_PIECE  = "Liberty"  , 1  = "Player 1" ,
-   *2            = "Player 2" };
+  /*var PLAYER_MAP = {
+   *EMPTY_PIECE  : "Liberty"  , 1  : "Player 1" ,
+   *2            : "Player 2" };
    */
-  
+
   //Constructor WORK
 
   for( i = 0 ; i < MAX ; i++ )
@@ -52,10 +53,13 @@ ZX_GO_Board = function( size, MODE ) {
     else
        _StoneCount = [ MAX>>1, MAX>>1 , 0 , 0];
   }
-  
+  else{
+    _StoneCount = [];
+  }
+
   /***************************************************************************/
   /////Private Members
-  
+
   //Library dereferencing
   var floor = Math.floor;
 
@@ -79,7 +83,7 @@ ZX_GO_Board = function( size, MODE ) {
 
   var direction      = [left,right,up,down];
   var directionCount = direction.length;
-  
+
   //Assist Functions for debugging
   //Converts the 1d <-> 2d coords
   function twoOne( x , y ){
@@ -92,7 +96,7 @@ ZX_GO_Board = function( size, MODE ) {
 
   /***************************************************************************/
   /////Main Functions
-  
+
   function cloneBoard(){
     //Returns a deep copy of the board
 
@@ -102,7 +106,7 @@ ZX_GO_Board = function( size, MODE ) {
     //return $.extend(true,[],_Board);
     return newBoard;
   };
-  
+
   function cloneStoneCount(){
     //Returns a deep copy of the StoneCount
 
@@ -144,9 +148,12 @@ ZX_GO_Board = function( size, MODE ) {
          _StoneCount = [ MAX>>1, MAX>>1 , 0 , 0];
     }
 
-    _History    = {};
+    if ( _MODE&2 )
+      _BoardHash  = {};
+    if ( _MODE&4 )
+     _History     = [];
 
-    _BoardHash  = {};
+
   };
 
   function canRemoveStones( pos ){
@@ -164,7 +171,7 @@ ZX_GO_Board = function( size, MODE ) {
      */
 
     var queue = [];
-    var count = 0;
+    var count =  0;
     var i;
 
     queue.push(pos);
@@ -200,7 +207,7 @@ ZX_GO_Board = function( size, MODE ) {
       return false;
     return libertyCheck(_Board[pos],pos);
   };
-  
+
   function libertyCheck ( color, pos ){
     /*Preforms a flood fill at pos, checking if we have any liberty
      *Returning true means we have at least one free liberty
@@ -215,7 +222,6 @@ ZX_GO_Board = function( size, MODE ) {
     queue.push(pos);
 
     while ( queue.length != 0 ){
-      //alert("Start node =" + pos);
       pos = queue.pop();
       if ( pos != -1 ){
         if( local_board[pos] == EMPTY_PIECE ){
@@ -245,7 +251,7 @@ ZX_GO_Board = function( size, MODE ) {
     /*Preforms a breadth first search on the board
      *to calculate territory
      */
-     
+
     var P1Score, P2Score, hasP1, hasP2, P1STONE, P2STONE;
     var i, j, k, blanksLeft, piecesToColor, roundPieceLeft;
     var lastblanksLeft;
@@ -270,9 +276,9 @@ ZX_GO_Board = function( size, MODE ) {
     blanksLeft = emptySpot.length;
 
     do{
-    
+
       lastblanksLeft = blanksLeft;
-      
+
       //For every blanksquare
       roundPieceLeft = emptySpot.length;
       while( roundPieceLeft ){
@@ -320,7 +326,7 @@ ZX_GO_Board = function( size, MODE ) {
         }
 
       }
-      
+
       //If we made no progress escape
       if ( lastblanksLeft == blanksLeft ){
         //alert("BLANK BOARD");
@@ -370,16 +376,14 @@ ZX_GO_Board = function( size, MODE ) {
     else
       return [1,"real"];
   }
-  
+
   this.stoneCount = function(){
     //Returns a copy of the current stoneCount
-    
-    return cloneStoneCount();
+    return _MODE&1 ? cloneStoneCount() : [0,0,0,0];
   }
-  
+
   this.curState = function(){
     //Returns a copy of the current board
-
     return cloneBoard();
   };
 
@@ -394,9 +398,10 @@ ZX_GO_Board = function( size, MODE ) {
     //Checks if pos is a valid move
     //If so returns true else false
 
+    var hash_val;
     var isValid;
     var i,j;
-    var new_board; 
+    var new_board;
     var colorPiece = color - 1;
     var enemyColor = color == 2 ? 1 : 2;
     var stoneCapture = 0;
@@ -413,13 +418,15 @@ ZX_GO_Board = function( size, MODE ) {
     if ( (  _MODE & 1) && _StoneCount[colorPiece] == 0 )
       return false;
 
-    isValid = true;
-
     //At this point, the move is valid but...
     _Board[pos] = color;
-    
+    isValid = true;
+
     //Check Hash
     if ( _MODE&2 ){
+      hash_val = this.hash();
+      if ( _BoardHash[hash_val] != undefined )
+        return false;
     }
 
     //Will this move be suicidal?
@@ -428,26 +435,38 @@ ZX_GO_Board = function( size, MODE ) {
         alert("Suscidal?");
       isValid = false;
     }
-    
+
+    //Check neighbors for capture
     for( j = 0 ; j < directionCount ; j++ )
       if ( ( i =  direction[j](pos) ) != -1 )
         if ( _Board[i] != color )
           if ( hasLiberty( i ) == false ){
             stoneCapture += canRemoveStones( i );
             isValid = true;
-          }    
+          }
 
+    //Will this new group live?
     if ( !isValid ){
-      //alert("FAILED");
+      //NO
       _Board[pos] = EMPTY_PIECE;
     }
-    else if ( _MODE&1 ){
+    else{
+      //YES
       //Update Stone Count
-      _StoneCount[        colorPiece  ] -= 1;
-      _StoneCount[ 2 + (1^colorPiece) ] += stoneCapture;
+      if ( _MODE&1 ){
+        _StoneCount[        colorPiece  ] -= 1;
+        _StoneCount[ 2 + (1^colorPiece) ] += stoneCapture;
+      }
 
       //Update Hash
+      if ( _MODE&2 )
+        _BoardHash[hash_val] = true;
+
+      //Update History
+      if ( _MODE&4 )
+        _History.push([pos,color_id]);
     }
+
     return isValid;
   };
 
@@ -458,7 +477,7 @@ ZX_GO_Board = function( size, MODE ) {
 
     clearBoard();
     return [output,a];
-  }
+  };
 
 }
 
