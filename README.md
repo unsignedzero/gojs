@@ -14,29 +14,70 @@ incomplete demos.
 Created by unsignedzero and started on 12-28-2012 as an idea.
 
 # TO DO #
-#### GO UI #
+### GO UI #
 
-* unpollute General Namespace (DONE)
+* Unpollute General Namespace (DONE)
 * Add gradient to the stones for realism (0%)
 * Add in-game timer (100%)
 * Change Right Column?
-* * Add logo?
-* * Add Turn Counter? 
+  * Add logo?
+  * Add Turn Counter? 
+  * Add prison exchange (0%)
+* Create menu for local settings (0%)
+* Create menu to display end game stats (0%)
+* Create replay menu/interface (0%)
+* Create template for different languages (0%)
 
-#### GO Engine #
+### GO Engine #
 * Account for Kos (100%)
-* Allow for prisoner exchanges (0%)
 * Add end game checker and scoring (DONE)
+* Allow for prisoner exchanges (0%)
+* Allows resizing board (50%)
+* Modify check return so UI gets more data back (0%)
 
-#### GO Title #
+### GO Title #
 1. Create Menu Outline (DONE)
 2. Add to spinner page (DONE)
-* Capture clicks
+  * Capture clicks
 3. Create "hook" for multiplayer?
-* unpollute General Namespace
+* Unpollute General Namespace
 * Create non-anim version
+* Mobile test (20%)
 
-# Version #
+## Browser Test #
+* To run this, a browser needs to mainly support JavaScript (KineticJS Library)
+and HTML5
+* For mobile devices they need to be able to zoom/pan from one of the board
+to another
+
+#### Desktop/Laptop Browsers tested #
+##### IE #
+* IE 6 NO
+* IE 8 NO
+
+##### Chrome #
+* Chrome 20.0.1132.57 works
+* Chrome 24.0.1312.52 works
+
+##### Firefox #
+* Firefox 18.0.1 works
+
+##### Firefox #
+* Opera 12.0.2 works
+
+##### Safari #
+* Safari 6.0.2 works
+
+#### Mobile Phone/Tablet Browsers tested #
+##### Opera #
+* Opera 12.1.0 works but zoom/pan does not work correctly
+
+##### Firefox
+* Firefox 17.0 works
+
+# Version/Changelog #
+
+* Added new goals and browser testing to readme
 
 #### 0.7.1.0 [01-21-2013] #
 * History Added (not used yet)
