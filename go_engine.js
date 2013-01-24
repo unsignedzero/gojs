@@ -1,15 +1,16 @@
 ﻿/*Go board Engine
- *Created by = David Tran
+ *Created by David Tran
  *on 1-3-2013
  *Version 0.7.1.0
- *Last modified 01-21-2013
+ *Last modified 01-23-2013
  */
 
 //Board Class
 
-var ZX_BOARD_DEBUG = false;
 
-ZX_GO_Board = function( size, MODE ) {
+zxGoBoard = function( size, MODE ) {
+
+  var DEBUG = false;
 
   //Private Variable Members
   //CONSTSTANTS
@@ -225,7 +226,7 @@ ZX_GO_Board = function( size, MODE ) {
       pos = queue.pop();
       if ( pos != -1 ){
         if( local_board[pos] == EMPTY_PIECE ){
-          if (ZX_BOARD_DEBUG){
+          if (DEBUG){
             alert('-' + pos + '-');
           }
           return true;
@@ -431,7 +432,7 @@ ZX_GO_Board = function( size, MODE ) {
 
     //Will this move be suicidal?
     if ( hasLiberty(pos) < 1 ){
-      if ( ZX_BOARD_DEBUG )
+      if ( DEBUG )
         alert("Suscidal?");
       isValid = false;
     }
@@ -481,7 +482,7 @@ ZX_GO_Board = function( size, MODE ) {
 
 }
 
-ZX_GO_Board.prototype = {
+zxGoBoard.prototype = {
   //Public Methods
   //function_name: function(){
 

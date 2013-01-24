@@ -1,7 +1,7 @@
-/*Created by David Tran (unsignedzero) twice
+/*Created by David Tran (unsignedzero)
  *on 1-3-2013
  *Version 0.7.1.0
- *Last modified 01-21-2013
+ *Last modified 01-23-2013
  *This code draws an interactive GO board on the screen
  *allowing two users to play the game
  */
@@ -12,146 +12,146 @@
 //WARNING setOpacity explicit wants a float type. Feeding it an int, makes it do nothing
 //ZIndex must be non-negative
 
-var ZX_GO_UI = (function(){
+var zxGoUI = (function(){
 
-  var GO_UI_DEBUG = false;
-  var GO_UI_ANIM  = true;
-  var GO_UI_BIG   = false;
+  var DEBUG = false;
+  var ANIM  = true;
+  var BIG   = false;
 
   if ( isMobile() ){
-    GO_UI_ANIM = false;
+    ANIM = false;
   }
 
 //////////////////////////////////////////////////////////////////////////////
 
   //Specifies whose turn it is by the piece that needs to be played
-  var GO_UI_curPTurn = 0;
+  var curPTurn = 0;
   //Contains the current Player's stone in the upper left
-  var GO_UI_curPStonePiece;
+  var curPStonePiece;
   //Links to the animation for the above stone
-  var GO_UI_curPStoneAnim;
+  var curPStoneAnim;
   //Array of UI board pieces
-  var GO_UI_stoneBoard;
+  var stoneBoard;
   //Stores the backend Go Board from the engine
-  var GO_UI_backendGOBoard;
+  var backendGOBoard;
   //Cursor for GO Game
-  var GO_UI_cursor;
-  var GO_UI_cursorAnim;
+  var cursor;
+  var cursorAnim;
 
   //GO Status Object
-  var GO_UI_statusObj = [];
+  var statusObj = [];
 
   //GO Pause Button
-  var GO_UI_PauseButton;
-  var GO_UI_PauseBack;
+  var PauseButton;
+  var PauseBack;
 
-  //Clock Object
-  var GO_UI_Clock;
+  //clock Object
+  var clock;
 
   //Animation Values
   var captureFade = 500;
 
-  var GO_UI_stage = new Kinetic.Stage({
+  var stage = new Kinetic.Stage({
     container: 'container',
     width:  800,
     height: 700
   });
 
-  var GO_UI_scorePage    = new Kinetic.Layer();
-  var GO_UI_newGamePage  = new Kinetic.Layer();
-  var GO_UI_pausePage    = new Kinetic.Layer();
+  var scorePage    = new Kinetic.Layer();
+  var newGamePage  = new Kinetic.Layer();
+  var pausePage    = new Kinetic.Layer();
 
-  var GO_UI_cursorLayer  = new Kinetic.Layer();
-  var GO_UI_brdLayer     = new Kinetic.Layer();
-  var GO_UI_msgLayer     = new Kinetic.Layer();
-  var GO_UI_UILayer      = new Kinetic.Layer();
-  var GO_UI_FadeLayer    = new Kinetic.Layer();
-  var GO_UI_CurTurnLayer = new Kinetic.Layer();
+  var cursorLayer  = new Kinetic.Layer();
+  var brdLayer     = new Kinetic.Layer();
+  var msgLayer     = new Kinetic.Layer();
+  var UILayer      = new Kinetic.Layer();
+  var fadeLayer    = new Kinetic.Layer();
+  var curTurnLayer = new Kinetic.Layer();
 
-  var GO_UI_devNullLayer = new Kinetic.Layer();
+  var devNullLayer = new Kinetic.Layer();
   
 /////////////////////////////////////////////////////////////////////////////
 //Miscellaneous Functions
 
-  function clearLayer( _layer ){
+  function clearLayer( localLayer ){
     //Here we clear the layer of everything
     //(Note:To remove one node (graphic element) use the method remove
-    _layer.removeChildren();
+    localLayer.removeChildren();
   };
 
 ////////////////////////////////////////////////////////////////////////////
 //Code to create and support the GO Grid
  
-  function createBoard( board_option, _x, _y){
+  function createBoard( boardOption, localX, localy){
     //Here we create the GO Board itself
-    var brdLayer   = board_option['brdLayer'];
-    var sideLength = 500 + board_option['addx'];
-    var div        = board_option['div'];
+    var brdLayer   = boardOption['brdLayer'];
+    var sideLength = 500 + boardOption['addx'];
+    var div        = boardOption['div'];
 
     var interfaceArray;
-    GO_UI_backendGOBoard = new ZX_GO_Board(div+1,board_option['MODE']);
-    drawGOBoard(                 brdLayer,_x,_y,sideLength,div);
-    interfaceArray = layGoStones(brdLayer,_x,_y,sideLength,div);
+    backendGOBoard = new zxGoBoard(div+1,boardOption['MODE']);
+    drawGOBoard(                 brdLayer,localX,localy,sideLength,div);
+    interfaceArray = layGoStones(brdLayer,localX,localy,sideLength,div);
 
-    drawCursor( GO_UI_cursorLayer , sideLength , div );
+    drawCursor( cursorLayer , sideLength , div );
     return interfaceArray;
   };
  
-  function drawGOBoard( _layer, _x, _y, _size, div){
+  function drawGOBoard( localLayer, localX, localy, drawSize, div){
     //Draws the GO Board Background and the labels
     //In this function, div is the number of divisions one would see
     //so div 8 yields a 9x9 board (there are 8x8 squares)
     
-    var _fontSize    = 14;
-    var _fontXShift  = -5;    //Sets the relative hor shift
-    var _fontYShift  = -50;   //Sets the position away from the board
-    var i,j, tempPos, _radius;
+    var fontSize    = 14;
+    var fontXShift  = -5;    //Sets the relative hor shift
+    var fontYShift  = -50;   //Sets the position away from the board
+    var i,j, tempPos, radius;
 
   /////Draw Grid
-    _layer.add( new Kinetic.Rect({
-      x:           _x,
-      y:           _y,
-      width:       _size,
-      height:      _size,
+    localLayer.add( new Kinetic.Rect({
+      x:           localX,
+      y:           localy,
+      width:       drawSize,
+      height:      drawSize,
       stroke:      'black',
       strokeWidth: 2
     }));
 
     for( i = 0 ; i < div ; i++ ){
       //We cache the position of each hor/vert piece below
-      tempPos = Math.floor( i * _size / div );
+      tempPos = Math.floor( i * drawSize / div );
 
       //Horizontal Text
-      _layer.add( new Kinetic.Text({
-          x:          _x + _fontXShift + tempPos,
-          y:          _y + _fontYShift, 
+      localLayer.add( new Kinetic.Text({
+          x:          localX + fontXShift + tempPos,
+          y:          localy + fontYShift, 
           text:       i+1,
-          fontSize:   _fontSize,
+          fontSize:   fontSize,
           fontFamily: 'Calibri',
           Fill:       'black',
         }));
       
       //Horizontal Line
-      _layer.add( new Kinetic.Line({
-        points:       [_x,_y+tempPos,_x+_size,_y+tempPos],
+      localLayer.add( new Kinetic.Line({
+        points:       [localX,localy+tempPos,localX+drawSize,localy+tempPos],
         stroke:       '#000',
         strokeWidth:  2,
         lineCap:      'butt',
       }));
 
       //Vertical Text
-      _layer.add( new Kinetic.Text({
-          x:          _x + _fontYShift,
-          y:          _y + _fontXShift + tempPos, 
+      localLayer.add( new Kinetic.Text({
+          x:          localX + fontYShift,
+          y:          localy + fontXShift + tempPos, 
           text:       i+1,
-          fontSize:   _fontSize,
+          fontSize:   fontSize,
           fontFamily: 'Calibri',
           Fill:       'black',
         }));
 
       //Vertical Line
-      _layer.add( new Kinetic.Line({
-        points:       [_x+tempPos,_y,_x+tempPos,_y+_size],
+      localLayer.add( new Kinetic.Line({
+        points:       [localX+tempPos,localy,localX+tempPos,localy+drawSize],
         stroke:       '#000',
         strokeWidth:  2,
         lineCap:      'butt',
@@ -160,27 +160,27 @@ var ZX_GO_UI = (function(){
 
     //"Last" Numbers
     //Horizontal Text
-    _layer.add( new Kinetic.Text({
-        x:          _x + _fontXShift + _size,
-        y:          _y + _fontYShift, 
+    localLayer.add( new Kinetic.Text({
+        x:          localX + fontXShift + drawSize,
+        y:          localy + fontYShift, 
         text:       div+1,
-        fontSize:   _fontSize,
+        fontSize:   fontSize,
         fontFamily: 'Calibri',
         Fill:       'black',
       }));
 
     //Vertical Text
-    _layer.add( new Kinetic.Text({
-        x:          _x + _fontYShift,
-        y:          _y + _fontXShift + _size,
+    localLayer.add( new Kinetic.Text({
+        x:          localX + fontYShift,
+        y:          localy + fontXShift + drawSize,
         text:       div+1,
-        fontSize:   _fontSize,
+        fontSize:   fontSize,
         fontFamily: 'Calibri',
         Fill:       'black',
       }));
 
   /////Draws the extra dots on the board( reference points )
-    _radius = _size / 100 + 1;
+    radius = drawSize / 100 + 1;
 
     //Is this even?
     if ( div & 1 ^ 1 ){
@@ -188,10 +188,10 @@ var ZX_GO_UI = (function(){
       //Only possible thing is to draw the center
 
       if ( div < 8 )  
-        _layer.add( new Kinetic.Circle({
-          x:           _x + (_size>>1),
-          y:           _y + (_size>>1),
-          radius:      _radius,
+        localLayer.add( new Kinetic.Circle({
+          x:           localX + (drawSize>>1),
+          y:           localy + (drawSize>>1),
+          radius:      radius,
           fill:        'black',
           stroke:      'black',
           strokeWidth:  2
@@ -206,10 +206,10 @@ var ZX_GO_UI = (function(){
         var delta  = (div>>1) - border;
         for( i = 0 ; i <= 2 ; i++ )
           for( j = 0 ; j <= 2 ; j++ )
-            _layer.add( new Kinetic.Circle({
-              x:           _x + Math.floor( ( border + i * delta ) * _size / div ),
-              y:           _y + Math.floor( ( border + j * delta ) * _size / div ),
-              radius:      _radius,
+            localLayer.add( new Kinetic.Circle({
+              x:           localX + Math.floor( ( border + i * delta ) * drawSize / div ),
+              y:           localy + Math.floor( ( border + j * delta ) * drawSize / div ),
+              radius:      radius,
               fill:        'black',
               stroke:      'black',
               strokeWidth:  2
@@ -225,10 +225,10 @@ var ZX_GO_UI = (function(){
       var delta = div - (border<<1);
       for( i = 0 ; i <= 1 ; i++ )
         for( j = 0 ; j <= 1 ; j++ )
-          _layer.add( new Kinetic.Circle({
-            x:           _x + Math.floor( ( border + i * delta ) * _size / div ),
-            y:           _y + Math.floor( ( border + j * delta ) * _size / div ),
-            radius:      _radius,
+          localLayer.add( new Kinetic.Circle({
+            x:           localX + Math.floor( ( border + i * delta ) * drawSize / div ),
+            y:           localy + Math.floor( ( border + j * delta ) * drawSize / div ),
+            radius:      radius,
             fill:        'black',
             stroke:      'black',
             strokeWidth:  2
@@ -236,26 +236,26 @@ var ZX_GO_UI = (function(){
     }
   };
 
-  function layGoStones( _layer, _x, _y, _size, div ){
+  function layGoStones( localLayer, localX, localy, drawSize, div ){
     //This function takes the same args are drawGOBoard
     //and creates the "interactive" clickable area (possible stone position)
 
-    var i,_grid_size   = ((div+1)*(div+1));
-    var div_new        =   div+1;
-    //var _radius        = Math.floor(_size / 25 ) + 1;
-    var _radius        = Math.floor(_size / 25 * 8/div) + 1;
+    var i,griddrawSize   = ((div+1)*(div+1));
+    var divnew        =   div+1;
+    //var radius        = Math.floor(drawSize / 25 ) + 1;
+    var radius        = Math.floor(drawSize / 25 * 8/div) + 1;
     var interfaceArray = [];
     var temp;
 
-    if ( !GO_UI_BIG && _radius > 23 ) 
-      _radius = 23;
+    if ( !BIG && radius > 23 ) 
+      radius = 23;
 
     //Creates the clickable areas for the stones on the board
-    for ( i = 0 ; i < _grid_size ; i++ ){
+    for ( i = 0 ; i < griddrawSize ; i++ ){
       temp = new Kinetic.Circle({
-        x:           _x + Math.floor( ( i % div_new ) * _size / div ),
-        y:           _y + Math.floor( Math.floor( i / div_new ) * _size / div ),
-        radius:      _radius,
+        x:           localX + Math.floor( ( i % divnew ) * drawSize / div ),
+        y:           localy + Math.floor( Math.floor( i / divnew ) * drawSize / div ),
+        radius:      radius,
         fill:        'white',
         //fillRadialGradientStartPoint: 0,
         //fillRadialGradientStartRadius: 0,
@@ -271,41 +271,41 @@ var ZX_GO_UI = (function(){
       temp.color = 0;
 
       //Modify this for the click area
-      //GO_UI_CLICK
+      //CLICK
       temp.on('mousedown dbltap', function() {
         if (this.getOpacity() == 0 ){
 
-          if ( checkValidMove(this.posID, GO_UI_curPTurn + 1 ) ){
+          if ( checkValidMove(this.posID, curPTurn + 1 ) ){
             this.setOpacity(1);
 
             updateCursor(this.getX(),this.getY());
 
             //this.setFill( this.getFill() == 'white' ? 'black' : 'white' );
-            if( GO_UI_curPTurn == 0 ){
-              GO_UI_curPTurn = 1;
+            if( curPTurn == 0 ){
+              curPTurn = 1;
               this.setFill('white');
               this.color = 1;
             }
             else{
-              GO_UI_curPTurn = 0;
+              curPTurn = 0;
               this.setFill('black');
               this.color = 2;
             }
 
             //Don't forget to redraw to show changes!
-            _layer.draw();
+            localLayer.draw();
           }
           else{
             //BAD MOVE
           }
         }
 
-        if ( GO_UI_DEBUG )
-          WriteMsg( GO_UI_msgLayer, this.posID );
+        if ( DEBUG )
+          WriteMsg( msgLayer, this.posID );
       });
 
       interfaceArray.push(temp);
-      _layer.add( temp );
+      localLayer.add( temp );
     }
     return interfaceArray;
   };
@@ -320,21 +320,21 @@ var ZX_GO_UI = (function(){
     
     for( i = 0 ; i < max ; i++ ){
       //This case happens only when a piece is removed due to a capture
-      if ( GO_UI_stoneBoard[i].color != brdArray[i] ){
+      if ( stoneBoard[i].color != brdArray[i] ){
         //Animation options here
 
-        if ( GO_UI_ANIM ){
-          GO_UI_stoneBoard[i].color = 0;
+        if ( ANIM ){
+          stoneBoard[i].color = 0;
           deadPieces.push(i);
            /*
-           temp     = GO_UI_stoneBoard[i];
+           temp     = stoneBoard[i];
 
            tempAnim.start();
            */
         }
         else{
-          GO_UI_stoneBoard[i].color = 0;
-          GO_UI_stoneBoard[i].setOpacity(0.0);
+          stoneBoard[i].color = 0;
+          stoneBoard[i].setOpacity(0.0);
         }
       }
     }
@@ -354,13 +354,13 @@ var ZX_GO_UI = (function(){
     var i,max,anim;
     max = deadPieces.length;
 
-    GO_UI_FadeLayer.removeChildren();
-    GO_UI_FadeLayer.setOpacity(1.0);
-    GO_UI_brdLayer.draw();
+    fadeLayer.removeChildren();
+    fadeLayer.setOpacity(1.0);
+    brdLayer.draw();
 
     for( i = 0 ; i < max ; i++ ){
-      temp = GO_UI_stoneBoard[deadPieces.pop()];
-      GO_UI_FadeLayer.add( new Kinetic.Circle({
+      temp = stoneBoard[deadPieces.pop()];
+      fadeLayer.add( new Kinetic.Circle({
         x:           temp.getX(),
         y:           temp.getY(),
         radius:      temp.getRadius(),
@@ -374,21 +374,21 @@ var ZX_GO_UI = (function(){
     
     /*
     for( i = 0 ; i < max ; i++ )
-      GO_UI_stoneBoard[deadPieces[i]].setOpacity(0.0);
+      stoneBoard[deadPieces[i]].setOpacity(0.0);
      */
 
-    GO_UI_brdLayer.draw();
+    brdLayer.draw();
 
     anim = new Kinetic.Animation(function(frame) {
-      GO_UI_FadeLayer.setOpacity( 1 - (frame.time/captureFade) );
+      fadeLayer.setOpacity( 1 - (frame.time/captureFade) );
       if ( frame.time >= captureFade ){
         this.stop();
         frame.time = 0;
-        GO_UI_FadeLayer.setOpacity(0.0);
-        GO_UI_FadeLayer.removeChildren();
-        GO_UI_FadeLayer.draw();
+        fadeLayer.setOpacity(0.0);
+        fadeLayer.removeChildren();
+        fadeLayer.draw();
       }
-    }, GO_UI_FadeLayer);
+    }, fadeLayer);
 
     anim.start();
   };
@@ -404,7 +404,7 @@ var ZX_GO_UI = (function(){
     max = brdArray.length;
     
     for( i = 0 ; i < max ; i++ ){
-      if ( GO_UI_stoneBoard[i].color )
+      if ( stoneBoard[i].color )
         deadPieces.push(i);
       else{
         terrorityPieces.push([i,brdArray[i]]);
@@ -422,15 +422,15 @@ var ZX_GO_UI = (function(){
     var temp, pos;
     var i,j,max,anim;
 
-    GO_UI_FadeLayer.removeChildren();
-    GO_UI_FadeLayer.setOpacity(0.0);
-    GO_UI_brdLayer.draw();
+    fadeLayer.removeChildren();
+    fadeLayer.setOpacity(0.0);
+    brdLayer.draw();
     
     max = deadPieces.length;
 
     for( i = 0 ; i < max ; i++ ){
-      temp = GO_UI_stoneBoard[deadPieces.pop()];
-      GO_UI_FadeLayer.add( new Kinetic.Circle({
+      temp = stoneBoard[deadPieces.pop()];
+      fadeLayer.add( new Kinetic.Circle({
         x:           temp.getX(),
         y:           temp.getY(),
         radius:      temp.getRadius(),
@@ -448,9 +448,9 @@ var ZX_GO_UI = (function(){
     for( i = 0 ; i < max ; i++ ){
       pos  = terrorityPieces.pop();
       j = pos.pop();
-      temp = GO_UI_stoneBoard[pos.pop()];
+      temp = stoneBoard[pos.pop()];
       
-      GO_UI_FadeLayer.add( new Kinetic.Rect({
+      fadeLayer.add( new Kinetic.Rect({
         x:           temp.getX(),
         y:           temp.getY(),
         width:       temp.getRadius()<<1,
@@ -464,44 +464,44 @@ var ZX_GO_UI = (function(){
       //temp.setOpacity(0.0);
     }
 
-    GO_UI_FadeLayer.draw();
-    GO_UI_brdLayer.draw();
-    if ( GO_UI_ANIM ){
+    fadeLayer.draw();
+    brdLayer.draw();
+    if ( ANIM ){
       anim = new Kinetic.Animation(function(frame) {
-        GO_UI_FadeLayer.setOpacity( frame.time/captureFade );
+        fadeLayer.setOpacity( frame.time/captureFade );
         if ( frame.time >= captureFade ){
           this.stop();
           frame.time = 0;
-          GO_UI_FadeLayer.setOpacity(1.0);
+          fadeLayer.setOpacity(1.0);
         }
-      }, GO_UI_FadeLayer);
+      }, fadeLayer);
 
       anim.start();
     }
     else{
-      GO_UI_FadeLayer.setOpacity(1.0);
-      GO_UI_FadeLayer.draw();
+      fadeLayer.setOpacity(1.0);
+      fadeLayer.draw();
     }
      
   };
 /////////////////////////////////////////////////////////////////////////////
 //Code to create the cursor
-  function drawCursor( _layer , _size , div ){
+  function drawCursor( localLayer , drawSize , div ){
     //Creates the cursor
     
-    var sideLength  =  (Math.floor(_size / 25 * 8/div)<<1) + 3;
+    var sideLength  =  (Math.floor(drawSize / 25 * 8/div)<<1) + 3;
     
-    if ( !GO_UI_BIG && sideLength > 47 )
+    if ( !BIG && sideLength > 47 )
       sideLength = 47;
     
-    var _x = 48;
-    var _y = 48;
+    var localX = 48;
+    var localy = 48;
     
-    _layer.setOpacity(0.0);
+    localLayer.setOpacity(0.0);
 
-    GO_UI_cursor =  new Kinetic.Rect({
-      x:           _x,
-      y:           _y,
+    cursor =  new Kinetic.Rect({
+      x:           localX,
+      y:           localy,
       width:       sideLength,
       height:      sideLength,
       stroke:      'red',
@@ -511,68 +511,68 @@ var ZX_GO_UI = (function(){
       strokeWidth: 2,
     });
  
-    if ( GO_UI_ANIM ){
-      GO_UI_cursorAnim = new Kinetic.Animation(function(frame){
+    if ( ANIM ){
+      cursorAnim = new Kinetic.Animation(function(frame){
         if ( frame.time > 0 ){
           this.stop();
           frame.time = 0;
         }
-      }, GO_UI_cursorLayer);
-      GO_UI_cursorAnim.stop();
+      }, cursorLayer);
+      cursorAnim.stop();
     }
     else{
-      GO_UI_cursorAnim            = {};
-      GO_UI_cursorAnim.frame      = {};
-      GO_UI_cursorAnim.frame.time = 0;
+      cursorAnim            = {};
+      cursorAnim.frame      = {};
+      cursorAnim.frame.time = 0;
     }
  
-    GO_UI_cursor.on('mousedown dbltap', function() {
-      if ( GO_UI_cursorAnim.frame.time == 0 )
+    cursor.on('mousedown dbltap', function() {
+      if ( cursorAnim.frame.time == 0 )
         passTurn();
     });
 
-    _layer.add( GO_UI_cursor );
+    localLayer.add( cursor );
     
-    GO_UI_cursor.origX = _x;
-    GO_UI_cursor.origY = _y;
+    cursor.origX = localX;
+    cursor.origY = localy;
 
   };
 
-  function updateCursor( _x , _y ){
+  function updateCursor( localX , localy ){
     //Moves the cursor to the right position, via anim, or just "jump"
-    var curX   = GO_UI_cursor.getX();
-    var curY   = GO_UI_cursor.getY();
+    var curX   = cursor.getX();
+    var curY   = cursor.getY();
 
-    if ( GO_UI_ANIM ){
-      var deltaX = _x-curX;
-      var deltaY = _y-curY;
+    if ( ANIM ){
+      var deltaX = localX-curX;
+      var deltaY = localy-curY;
 
-      GO_UI_cursorAnim.stop();
+      cursorAnim.stop();
 
-      GO_UI_cursorAnim = new Kinetic.Animation(function(frame) {
-        GO_UI_cursor.setX( Math.floor(curX + deltaX*(frame.time/1000)));
-        GO_UI_cursor.setY( Math.floor(curY + deltaY*(frame.time/1000)));
+      cursorAnim = new Kinetic.Animation(function(frame) {
+        cursor.setX( Math.floor(curX + deltaX*(frame.time/1000)));
+        cursor.setY( Math.floor(curY + deltaY*(frame.time/1000)));
         if( frame.time >= 1000 ){
-          GO_UI_cursorAnim.stop();
+          cursorAnim.stop();
           frame.time = 0;
           this.stop();
-          GO_UI_cursor.setX( _x );
-          GO_UI_cursor.setY( _y );
+          cursor.setX( localX );
+          cursor.setY( localy );
         }
-      },GO_UI_cursorLayer);
+      },cursorLayer);
 
-      GO_UI_cursorAnim.start();
+      cursorAnim.start();
     }
     else{
-      GO_UI_cursor.setX( _x );
-      GO_UI_cursor.setY( _y );
-      GO_UI_cursorLayer.draw();
+      cursor.setX( localX );
+      cursor.setY( localy );
+      cursorLayer.draw();
     }
   };
 
 /////////////////////////////////////////////////////////////////////////////
 //Code to create and update the extra UI
-  function drawPStoneUI( CurTurnLayer ){
+  function drawPStoneUI( curTurnLayer ){
   /////Draw Upper Left UI Element (player counter)
     // This IS a hard coded position
 
@@ -593,30 +593,11 @@ var ZX_GO_UI = (function(){
 
     //Click event for the "grey" back
     temp.on( 'mousedown touchmove', function(){
-      /*
-      var _width = $(window).width(); 
-      var _height = $(window).height();
-      GO_UI_stage.transitionTo({
-        x:     (_width-GO_UI_stage.getWidth())>>1,
-        y:     (_height-GO_UI_stage.getHeight())>>1,
-        opacity: 1,
-        duration: 2
-      });
-      */
-      /*
-      $('container').animate({
-        "left": ($(window).width())>>1}, "slow");
-       */
-      /*
-      ZX_BOARD_DEBUG = ZX_BOARD_DEBUG ? false : true;
-      externWriteMsg( "DEBUG STATUS: " + ZX_BOARD_DEBUG );
-       */
-     //loadPauseScreen();
       });
 
-    CurTurnLayer.add(temp);
+    curTurnLayer.add(temp);
 
-    GO_UI_curPStonePiece = new Kinetic.Circle({
+    curPStonePiece = new Kinetic.Circle({
       stroke:      'black',
       x:           45,
       y:           45,
@@ -626,143 +607,142 @@ var ZX_GO_UI = (function(){
       fill:        'gray',
     });
 
-    GO_UI_curPStoneAnim = new Kinetic.Animation(function(frame) {
+    curPStoneAnim = new Kinetic.Animation(function(frame) {
       //Creates the "flip" animation for the stone piece
       var scale = Math.cos( (frame.time<<1) * Math.PI /2000)  + 0.001;
 
-      GO_UI_curPStonePiece.setScale(1,scale);
+      curPStonePiece.setScale(1,scale);
       if( frame.time >1000 ){
         frame.time = 0;
         this.half = false;
         this.stop();
       }
       else if( frame.time > 500 ){
-        if ( GO_UI_curPStoneAnim.half == false){
-          GO_UI_curPStonePiece.setFill( GO_UI_curPStonePiece.getFill() == 'white' ? 'black' : 'white'); 
-          //GO_UI_curPStonePiece.setFill( GO_UI_curPTurn == 1 ? 'black' : 'white'); 
+        if ( curPStoneAnim.half == false){
+          curPStonePiece.setFill( curPStonePiece.getFill() == 'white' ? 'black' : 'white'); 
           this.half = true;
         }
       }
-    }, CurTurnLayer);
+    }, curTurnLayer);
 
-    GO_UI_curPStoneAnim.half = false;
+    curPStoneAnim.half = false;
     
-    GO_UI_curPStonePiece.hasPassed = false;
+    curPStonePiece.hasPassed = false;
 
     //Creates the animation for clicking the piece in the upper left
-    //This will fade (in and out) the right column UI if GO_UI_ANIM is true
+    //This will fade (in and out) the right column UI if ANIM is true
     //else instantly change it
-    GO_UI_curPStonePiece.on('mousedown tap', function(){
+    curPStonePiece.on('mousedown tap', function(){
       //Case A we use animation to make it work
-      if ( GO_UI_ANIM ){
-        var UI_shrink = new Kinetic.Animation(function(frame) {
-          if ( UI_shrink.fade ){
-            GO_UI_UILayer.setOpacity( 1 - (frame.time/200) );
+      if ( ANIM ){
+        var shrinkAnim = new Kinetic.Animation(function(frame) {
+          if ( shrinkAnim.fade ){
+            UILayer.setOpacity( 1 - (frame.time/200) );
             if ( frame.time >= 200 ){
               this.stop();
-              GO_UI_stage.setWidth(626);
+              stage.setWidth(626);
               frame.time = 0;
-              UI_shrink.fade = false;
+              shrinkAnim.fade = false;
             }
           }
           else{
-            GO_UI_stage.setWidth(800);
-            GO_UI_UILayer.setOpacity( frame.time/200 );
+            stage.setWidth(800);
+            UILayer.setOpacity( frame.time/200 );
             if ( frame.time >= 200 ){
               this.stop();
               frame.time = 0;
-              UI_shrink.fade = true;
+              shrinkAnim.fade = true;
             }
           }
-        }, GO_UI_UILayer);
+        }, UILayer);
    
-        UI_shrink.fade = GO_UI_stage.getWidth() < 630 ? false : true;
+        shrinkAnim.fade = stage.getWidth() < 630 ? false : true;
 
-        UI_shrink.start();
+        shrinkAnim.start();
       }
-      //Case B no GO_UI_ANIM
+      //Case B no ANIM
       else{
-        if( GO_UI_stage.getWidth() < 630 ){
-          GO_UI_UILayer.setOpacity(1.0);
-          GO_UI_UILayer.draw();
-          GO_UI_stage.setWidth(800);
+        if( stage.getWidth() < 630 ){
+          UILayer.setOpacity(1.0);
+          UILayer.draw();
+          stage.setWidth(800);
         }
         else{
-          GO_UI_UILayer.setOpacity(0.0);
-          GO_UI_UILayer.draw();
-          GO_UI_stage.setWidth(620);
+          UILayer.setOpacity(0.0);
+          UILayer.draw();
+          stage.setWidth(620);
         }
       }
     });
 
-    CurTurnLayer.add(GO_UI_curPStonePiece);
+    curTurnLayer.add(curPStonePiece);
   };
 
-  function updatePStoneUI( CurTurnLayer ){
+  function updatePStoneUI( curTurnLayer ){
     //Changes the color piece in the PStoneUI
     
-    if ( GO_UI_ANIM ){
+    if ( ANIM ){
 
-      GO_UI_curPStoneAnim.stop();
+      curPStoneAnim.stop();
 
       //Solves really fast clicks problem
-      GO_UI_curPStonePiece.setFill( GO_UI_curPTurn == 1 ? 'black' : 'white' );
+      curPStonePiece.setFill( curPTurn == 1 ? 'black' : 'white' );
 
-      GO_UI_curPStoneAnim.frame.time = 0;
-      GO_UI_curPStoneAnim.half = false;
+      curPStoneAnim.frame.time = 0;
+      curPStoneAnim.half = false;
     
-      GO_UI_curPStoneAnim.start();
+      curPStoneAnim.start();
     }
     else{
-      GO_UI_curPStonePiece.setFill( GO_UI_curPStonePiece.getFill() == 'white' ? 'black' : 'white'); 
-      CurTurnLayer.draw();
+      curPStonePiece.setFill( curPStonePiece.getFill() == 'white' ? 'black' : 'white'); 
+      curTurnLayer.draw();
     }
   };
   
   function drawColumnUI( UILayer , shiftx, shifty, scaley){
    //Draws the right column UI (for future use) and other non-board UI
-    var _x, _y, _width, _height, _font, _fontSize, _radius;
-    var _stonePad, _textPad, _statusy;
-    var _turnBoxSize;
+    var localX, localy, width, height, font, fontSize, radius;
+    var stonePad, textPad, statusy;
+    var turnBoxSize;
     var temp;
     var curY;
-    var i, max, j, max_j;
+    var i, maxi, j, maxj;
 
-    _x           = 630 + (shiftx == undefined ? 0 : shiftx);
-    _y           =  20 + (shifty == undefined ? 0 : shifty);
-    _width       = 160;
-    _height      = 560;
-    _font        = 'Calibri';
-    _fontSize    =  20;
-    _turnBoxSize = 140;
+    localX      = 630 + (shiftx == undefined ? 0 : shiftx);
+    localy      =  20 + (shifty == undefined ? 0 : shifty);
+    width       = 160;
+    height      = 560;
+    font        = 'Calibri';
+    fontSize    = 20;
+    turnBoxSize = 140;
 
     //Status Var
-    _radius      =  20;
-    _stonePad    =  10;
-    _textPad     =  5;
-    _statusY     =  _height*0.15;
-    curY         =   0;
+    radius      = 20;
+    stonePad    = 10;
+    textPad     = 5;
+    statusY     = height*0.15;
+    curY        = 0;
 
-  /////Draw Right Column UI Element
+    //Draw Right Column UI Element
     UILayer.add( new Kinetic.Rect({
-      x:           _x,
-      y:           _y,
-      width:       _width,
-      height:      _height,
+      x:           localX,
+      y:           localy,
+      width:       width,
+      height:      height,
       stroke:      'black',
       strokeWidth: 2
     }));
 
     //Creates the Status Box
-    max = 2;
-    for( i = 0 ; i < max ; i++ ){
+    maxi = 2;
+    for( i = 0 ; i < maxi ; i++ ){
 
        temp = new Kinetic.Text({
-        x:           _x + (_width>>1),
-        y:           _y + _statusY + curY + _textPad,
+        x:           localX + (width>>1),
+        y:           localy + statusY + curY + textPad,
         text:        i ? 'Captured' : 'Remaining',
-        fontSize:    _fontSize + 6,
-        font:        _font,
+        fontSize:    fontSize + 6,
+        font:        font,
         Fill:       'black',
       });
       
@@ -770,65 +750,65 @@ var ZX_GO_UI = (function(){
         x: temp.getWidth()>>1,
       });
 
-      GO_UI_statusObj.push(temp);
+      statusObj.push(temp);
 
-      curY += _textPad;
+      curY += textPad;
       
-      GO_UI_statusObj.push( new Kinetic.Rect({
-        x:           _x,
-        y:           _y + _statusY + curY - _textPad,
-        width:       _width,
-        height:      (_textPad<<1) + _fontSize,
+      statusObj.push( new Kinetic.Rect({
+        x:           localX,
+        y:           localy + statusY + curY - textPad,
+        width:       width,
+        height:      (textPad<<1) + fontSize,
         stroke:      'black',
         strokeWidth: 2
       })); 
       
-      curY += _fontSize + _textPad;
+      curY += fontSize + textPad;
 
-      max_j = 2;
-      for( j = 0 ; j < max_j ; j++ ){
-        GO_UI_statusObj.push( new Kinetic.Circle({
-          x:           _x + _radius + _stonePad,
-          y:           _y + _radius + _stonePad + _statusY + curY,
-          radius:      _radius,
+      maxj = 2;
+      for( j = 0 ; j < maxj ; j++ ){
+        statusObj.push( new Kinetic.Circle({
+          x:           localX + radius + stonePad,
+          y:           localy + radius + stonePad + statusY + curY,
+          radius:      radius,
           fill:        j ? 'black' : 'white',
           stroke:      'black',
           strokeWidth: 2
         })); 
 
-        GO_UI_statusObj.push( new Kinetic.Text({
-          x:           _x + _radius + _stonePad + _textPad + _radius,
-          y:           _y + ((_radius)>>1) + _stonePad + _statusY + curY - 3,
+        statusObj.push( new Kinetic.Text({
+          x:           localX + radius + stonePad + textPad + radius,
+          y:           localy + ((radius)>>1) + stonePad + statusY + curY - 3,
           text:        '0',
-          fontSize:    _fontSize + 12,
-          font:        _font,
+          fontSize:    fontSize + 12,
+          font:        font,
           Fill:       'black',
         })); 
 
-        GO_UI_statusObj.push( new Kinetic.Rect({
-          x:           _x,
-          y:           _y + _statusY + curY,
-          width:       _width,
-          height:      ( _radius+_stonePad)<<1,
+        statusObj.push( new Kinetic.Rect({
+          x:           localX,
+          y:           localy + statusY + curY,
+          width:       width,
+          height:      ( radius+stonePad)<<1,
           stroke:      'black',
           strokeWidth: 2
         })); 
 
-        curY += (_radius+_stonePad)<<1;
+        curY += (radius+stonePad)<<1;
       }
     }
 
-    max = GO_UI_statusObj.length;
+    max = statusObj.length;
     for( i = 0 ; i < max ; i++)
-      UILayer.add( GO_UI_statusObj[i] );
+      UILayer.add( statusObj[i] );
    
     //Create Text
     temp = new Kinetic.Text({
-      x:           _x + (_width>>1),
-      y:           _y + 20,
+      x:           localX + (width>>1),
+      y:           localy + 20,
       text:        'Go Game',
-      fontSize:    _fontSize + 6,
-      font:        _font,
+      fontSize:    fontSize + 6,
+      font:        font,
       Fill:       'black',
     });
 
@@ -841,11 +821,11 @@ var ZX_GO_UI = (function(){
 
     //Create Turn Counter
     temp = new Kinetic.Text({
-      x:           _x + (_width>>1),
-      y:           _y + _height - _turnBoxSize - (_turnBoxSize>>3),
+      x:           localX + (width>>1),
+      y:           localy + height - turnBoxSize - (turnBoxSize>>3),
       text:        'Turn',
-      fontSize:    _fontSize + 4,
-      font:        _font,
+      fontSize:    fontSize + 4,
+      font:        font,
       Fill:       'black',
       textColor:  'black',
     });
@@ -857,10 +837,10 @@ var ZX_GO_UI = (function(){
     UILayer.add(temp);
 
     temp = new Kinetic.Rect({
-      x:           _x + (_width>>1),
-      y:           _y + _height - _turnBoxSize + (_turnBoxSize>>3),
-      width:       _turnBoxSize - (_turnBoxSize>>2),
-      height:      _turnBoxSize - (_turnBoxSize>>2),
+      x:           localX + (width>>1),
+      y:           localy + height - turnBoxSize + (turnBoxSize>>3),
+      width:       turnBoxSize - (turnBoxSize>>2),
+      height:      turnBoxSize - (turnBoxSize>>2),
       stroke:      'black',
       strokeWidth: 1
     });
@@ -874,10 +854,10 @@ var ZX_GO_UI = (function(){
 
   function updateStats( stoneCount ){
     //Updatse the right column stats
-    GO_UI_statusObj[14].setText(stoneCount.pop());
-    GO_UI_statusObj[11].setText(stoneCount.pop());
-    GO_UI_statusObj[ 6].setText(stoneCount.pop());
-    GO_UI_statusObj[ 3].setText(stoneCount.pop());
+    statusObj[14].setText(stoneCount.pop());
+    statusObj[11].setText(stoneCount.pop());
+    statusObj[ 6].setText(stoneCount.pop());
+    statusObj[ 3].setText(stoneCount.pop());
   }
   
 /////////////////////////////////////////////////////////////////////////////
@@ -887,14 +867,14 @@ var ZX_GO_UI = (function(){
     //Allows players to pass a turn
     
     //Check if this is the end
-    if ( GO_UI_curPStonePiece.hasPassed ){
+    if ( curPStonePiece.hasPassed ){
       
       //Prompt for end game?
 
       //Cover Board area (to hide changes)
 
       //End game calculations
-      var score = GO_UI_backendGOBoard.endGame( );
+      var score = backendGOBoard.endGame( );
       
       finalBoard = score[1];
       score      = score[0];
@@ -903,84 +883,72 @@ var ZX_GO_UI = (function(){
       updateBoardFin(finalBoard);
 
       //Fade Layer?
-      if ( GO_UI_ANIM ){
+      if ( ANIM ){
         
       }
       else{
       }
 
       //Show stats and ask for new game?
-      if ( GO_UI_ANIM ){
+      if ( ANIM ){
       }
       else{
       }
 
       //TEMP OUTPUT
-      var temp_output = "Game time: " + (GO_UI_Clock.frame.time/1000) + "s | ";
-      temp_output += "White:" + score[0] + " Black:" + score[1];
-      externWriteMsg(temp_output);
+      var tempoutput = "Game time: " + (clock.frame.time/1000) + "s | ";
+      tempoutput += "White:" + score[0] + " Black:" + score[1];
+      externWriteMsg(tempoutput);
       
       //Reset the clock (will be completed later)
-      GO_UI_Clock.stop();
-      GO_UI_Clock.frame.time = 0;
-      GO_UI_Clock.start();
+      clock.stop();
+      clock.frame.time = 0;
+      clock.start();
       
       loadPauseScreen();
 
-      GO_UI_backendGOBoard.hasPassed = false;
+      backendGOBoard.hasPassed = false;
 
       //Reset Screen
 
     }
     else
-      GO_UI_curPStonePiece.hasPassed = true;
+      curPStonePiece.hasPassed = true;
 
     //Prompt it?
 
     //Redraw Stone
-    updatePStoneUI( GO_UI_CurTurnLayer );
+    updatePStoneUI( curTurnLayer );
     
-    GO_UI_curPTurn ^=1;
+    curPTurn ^=1;
   };
 
-  function checkValidMove( pos, color_id ){
+  function checkValidMove( pos, colorid ){
     //Checks IF the click is valid and PStoneUI, as needed
     var stoneCount;
     var i, max;
     var valid = true;
     
     //Call code to check
-    valid = GO_UI_backendGOBoard.isValidMove(pos, color_id);
+    valid = backendGOBoard.isValidMove(pos, colorid);
     
     if ( !valid )
       return false;
       
-    GO_UI_curPStonePiece.hasPassed = false;
+    curPStonePiece.hasPassed = false;
 
     //Update grid
-    GO_UI_stoneBoard[pos].color = color_id;
+    stoneBoard[pos].color = colorid;
 
-    updateBoard(GO_UI_backendGOBoard.curState());
+    updateBoard(backendGOBoard.curState());
 
-    updatePStoneUI( GO_UI_CurTurnLayer );
+    updatePStoneUI( curTurnLayer );
 
     //Update Stone Count
-    stoneCount = GO_UI_backendGOBoard.stoneCount();
-
+    stoneCount = backendGOBoard.stoneCount();
     updateStats( stoneCount );
 
-    /*
-      //Run this to find out which entries contain text
-      max = GO_UI_statusObj.length;
-      for( i = 0 ; i < max ; i++ ){
-        try{
-          GO_UI_statusObj[ i ].setText(i);
-        }
-        catch( error ){}
-      }
-     */
-
-    GO_UI_UILayer.draw();
+    UILayer.draw();
 
     return valid;
   };
@@ -988,38 +956,38 @@ var ZX_GO_UI = (function(){
   function cleaningGame(){
     //Resets game for next "round"
     var boardAnim;
-    if ( GO_UI_ANIM ){
+    if ( ANIM ){
       boardAnim = new Kinetic.Animation(function(frame){
-        GO_UI_FadeLayer.setOpacity( 1 - (frame.time/2000) );
+        fadeLayer.setOpacity( 1 - (frame.time/2000) );
         if ( frame.time>= 2000 ){
           this.stop();
           frame.time = 0;
-          GO_UI_FadeLayer.setOpacity(0.0);
-          GO_UI_FadeLayer.removeChildren();
+          fadeLayer.setOpacity(0.0);
+          fadeLayer.removeChildren();
         }
-      },GO_UI_FadeLayer);
+      },fadeLayer);
       
       boardAnim.start();
     }
     else{
-      GO_UI_FadeLayer.setOpacity(0.0);
-      GO_UI_FadeLayer.removeChildren();
-      GO_UI_FadeLayer.draw();
+      fadeLayer.setOpacity(0.0);
+      fadeLayer.removeChildren();
+      fadeLayer.draw();
     }
      
     //Move Cursor
-    updateCursor(GO_UI_cursor.origX,GO_UI_cursor.origY);
+    updateCursor(cursor.origX,cursor.origY);
     
     //Erase Msg
-    ClearMsg( GO_UI_msgLayer );
+    ClearMsg( msgLayer );
     
     //Reset Stats
     updateStats( [0,0,0,0] );
     
     //Update Turn Counter
-    if ( GO_UI_curPTurn != 0 ){
-      updatePStoneUI( GO_UI_CurTurnLayer );
-      GO_UI_curPTurn = 0;
+    if ( curPTurn != 0 ){
+      updatePStoneUI( curTurnLayer );
+      curPTurn = 0;
     }
   };
   
@@ -1052,21 +1020,21 @@ var ZX_GO_UI = (function(){
   
     var Border = 5;
 
-    var width  = GO_UI_stage.getWidth() - (Border<<1);
+    var width  = stage.getWidth() - (Border<<1);
     var height = 640 - ( Border << 2 );
     var temp, BGLayer;
   
-    var _font, _fontSize, _radius;
-    var _stonePad, _textPad, _statusy;
+    var font, fontSize, radius;
+    var stonePad, textPad, statusy;
 
-    _font        = 'Calibri';
-    _fontSize    =  20;
+    font        = 'Calibri';
+    fontSize    =  20;
 
     //Status Var
-    _radius      =  20;
-    _stonePad    =  10;
-    _textPad     =  5;
-    _statusY     =  _height*0.15;
+    radius      =  20;
+    stonePad    =  10;
+    textPad     =  5;
+    statusY     =  height*0.15;
     
     //Background
     BGLayer = createBGLayer( width, height, Border );
@@ -1081,8 +1049,8 @@ var ZX_GO_UI = (function(){
       shadowBlur:    2,
       shadowOpacity: 1,
 
-      font:          _font,
-      fontSize:      _fontSize,
+      font:          font,
+      fontSize:      fontSize,
       text:          "Setup Page",
     });
 
@@ -1100,15 +1068,15 @@ var ZX_GO_UI = (function(){
     
     var Border = 5;
     
-    var width  = GO_UI_stage.getWidth() - (Border<<1);
-    var height    = 640 - (Border<<2);
-    var unpause_y = 60;  
+    var width         = stage.getWidth() - (Border<<1);
+    var height        = 640 - (Border<<2);
+    var unpauselocaly = 60;  
     var temp;
     var box;
 
-    GO_UI_PauseBack = createBGLayer( width, height, Border );
+    PauseBack = createBGLayer( width, height, Border );
     
-    pauseLayer.add(GO_UI_PauseBack);
+    pauseLayer.add(PauseBack);
     
     temp = new Kinetic.Text({
       x:             width>>1,
@@ -1132,7 +1100,7 @@ var ZX_GO_UI = (function(){
     
     temp = new Kinetic.Text({
       x:             width>>1,
-      y:             unpause_y+(height>>1),
+      y:             unpauselocaly+(height>>1),
       fill:          'black',
       shadowColor:   'white',
       shadowBlur:    2,
@@ -1148,10 +1116,10 @@ var ZX_GO_UI = (function(){
       y:   temp.getHeight()>>1
     });
     
-    GO_UI_PauseButton = new Kinetic.Rect({
-      x:            width>>1,
-      y:            unpause_y+(height>>1),
-      stroke:       '#222',
+    PauseButton = new Kinetic.Rect({
+      x:             width>>1,
+      y:             unpauselocaly+(height>>1),
+      stroke:        '#222',
       strokeWidth:   5,
       width:         10+temp.getWidth(),
       height:        10+temp.getHeight(),
@@ -1161,30 +1129,30 @@ var ZX_GO_UI = (function(){
       cornerRadius:  10
     });
 
-    GO_UI_PauseButton.inAnim = GO_UI_ANIM;
+    PauseButton.inAnim = ANIM;
     
-    GO_UI_PauseButton.setOffset({
-      x:   GO_UI_PauseButton.getWidth()>>1,
-      y:   GO_UI_PauseButton.getHeight()>>1
+    PauseButton.setOffset({
+      x:   PauseButton.getWidth()>>1,
+      y:   PauseButton.getHeight()>>1
     });
     
-    GO_UI_PauseButton.on('mouseover', function(){
-      if ( GO_UI_ANIM && !GO_UI_PauseButton.inAnim ){
-        GO_UI_PauseButton.setStroke("#ddd");
+    PauseButton.on('mouseover', function(){
+      if ( ANIM && !PauseButton.inAnim ){
+        PauseButton.setStroke("#ddd");
         pauseLayer.draw();
       }
     });
     
-    GO_UI_PauseButton.on('mouseout', function(){
-      if ( GO_UI_ANIM && !GO_UI_PauseButton.inAnim ){
-        GO_UI_PauseButton.setStroke("#222");
+    PauseButton.on('mouseout', function(){
+      if ( ANIM && !PauseButton.inAnim ){
+        PauseButton.setStroke("#222");
         pauseLayer.draw();
       }
     });
     
-    GO_UI_PauseButton.on('mousedown tap', function(){
-      if ( GO_UI_ANIM && !GO_UI_PauseButton.inAnim ){
-        GO_UI_PauseButton.inAnim = true;
+    PauseButton.on('mousedown tap', function(){
+      if ( ANIM && !PauseButton.inAnim ){
+        PauseButton.inAnim = true;
         (new Kinetic.Animation(function(frame){
           pauseLayer.setOpacity( 1 - (frame.time/2000) );
           if ( frame.time>= 2000 ){
@@ -1195,7 +1163,7 @@ var ZX_GO_UI = (function(){
           }
         },pauseLayer)).start();
       }
-      else if ( !GO_UI_ANIM ) {
+      else if ( !ANIM ) {
         pauseLayer.setZIndex(0);
         pauseLayer.setOpacity(0.0);
         pauseLayer.draw();
@@ -1204,7 +1172,7 @@ var ZX_GO_UI = (function(){
     });
     
     pauseLayer.add(temp);
-    pauseLayer.add(GO_UI_PauseButton);
+    pauseLayer.add(PauseButton);
     pauseLayer.setZIndex(0);
 
   };
@@ -1212,24 +1180,24 @@ var ZX_GO_UI = (function(){
   function loadPauseScreen(){
     //Fades in the pause screen page, or instantly draws it
     
-    GO_UI_PauseBack.setWidth(GO_UI_stage.getWidth()-10);
-    GO_UI_pausePage.setZIndex(50);
-    GO_UI_pausePage.setOpacity(0.0);
+    PauseBack.setWidth(stage.getWidth()-10);
+    pausePage.setZIndex(50);
+    pausePage.setOpacity(0.0);
     
-    if ( GO_UI_ANIM ){  
+    if ( ANIM ){  
       (new Kinetic.Animation(function(frame){
-        GO_UI_pausePage.setOpacity( frame.time/2000 );
+        pausePage.setOpacity( frame.time/2000 );
         if ( frame.time>= 2000 ){
           this.stop();
-          GO_UI_pausePage.setOpacity(1.0);
+          pausePage.setOpacity(1.0);
           frame.time = 0;
-          GO_UI_PauseButton.inAnim = false;
+          PauseButton.inAnim = false;
         }
-      },GO_UI_pausePage)).start();
+      },pausePage)).start();
     }
     else{
-      GO_UI_pausePage.setOpacity(1.0);
-      GO_UI_pausePage.draw();
+      pausePage.setOpacity(1.0);
+      pausePage.draw();
     }
   };
 
@@ -1244,58 +1212,58 @@ var ZX_GO_UI = (function(){
     //Here we set up all miscellaneous/background work
     //that will be done for the game
 
-    //Setup Clock
+    //Setup clock
     //frame.time increases per millisecond
     var hour = 1000*60*60;
 
-    GO_UI_Clock = new Kinetic.Animation( function(frame){
+    clock = new Kinetic.Animation( function(frame){
       if ( frame.time >= hour )
         frame.time = 0;
-    }, GO_UI_devNullLayer);
+    }, devNullLayer);
 
-    GO_UI_Clock.start();
+    clock.start();
   };
 
 ///////////////////////////////////////////////////////////////////////////// 
 //"Main" Functions
-  function drawUI( board_option ){
+  function drawUI( boardOption ){
     //Creates the full UI
 
-    drawColumnUI( board_option['UILayer'] , board_option['addx'], 0, board_option['addy']);
-    drawPStoneUI( board_option['CurTurnLayer'] );
+    drawColumnUI( boardOption['UILayer'] , boardOption['addx'], 0, boardOption['addy']);
+    drawPStoneUI( boardOption['curTurnLayer'] );
 
     //Start initial animation or correct initial color
-    if ( GO_UI_ANIM )
-      GO_UI_curPStoneAnim.start();
+    if ( ANIM )
+      curPStoneAnim.start();
     else
-      GO_UI_curPStonePiece.setFill('white');
+      curPStonePiece.setFill('white');
 
     //Draw the Actual GO Board
-    GO_UI_stoneBoard = createBoard( board_option,100,100 );
+    stoneBoard = createBoard( boardOption,100,100 );
   };
 
-  function WriteMsg( _layer, msg ){
+  function WriteMsg( localLayer, msg ){
     //This is a message function to send messages to the screen
 
-    var context = _layer.getContext();
-    _layer.clear();
+    var context = localLayer.getContext();
+    localLayer.clear();
 
     context.font      = '18pt Calibri';
     context.fillStyle = 'black';
     context.fillText(msg, 100, 30);
   };
   
-  function ClearMsg( _layer ){
+  function ClearMsg( localLayer ){
     //This clears the message
     
-    var context = _layer.getContext();
-    _layer.clear();
+    var context = localLayer.getContext();
+    localLayer.clear();
   };
 
   function startAfterFade(){
     //After the fade-in animation is completed what do we do
-    GO_UI_cursorLayer.setOpacity(1.0);
-    drawPauseScreen(GO_UI_pausePage);
+    cursorLayer.setOpacity(1.0);
+    drawPauseScreen(pausePage);
   };
 
 ///////////////////////////////////////////////////////////////////////////// 
@@ -1304,8 +1272,8 @@ var ZX_GO_UI = (function(){
   function externWriteMsg( msg ){
     //This is a message function to send messages to the screen
 
-    var context = GO_UI_msgLayer.getContext();
-    GO_UI_msgLayer.clear();
+    var context = msgLayer.getContext();
+    msgLayer.clear();
 
     context.font      = '18pt Calibri';
     context.fillStyle = 'black';
@@ -1314,23 +1282,23 @@ var ZX_GO_UI = (function(){
 
   function externCreateBoard( div, MODE ){
     //Creates the new board, NOT TESTED
-    GO_UI_backendGOBoard.resizeBoard(div);
-    GO_UI_brdLayer.removeChildren();
-    GO_UI_brdLayer.draw();
-    GO_UI_stoneBoard = createBoard( {'brdLayer':GO_UI_brdLayer, 'addx':0, 'addy':0, 'div':div}
+    backendGOBoard.resizeBoard(div);
+    brdLayer.removeChildren();
+    brdLayer.draw();
+    stoneBoard = createBoard( {'brdLayer':brdLayer, 'addx':0, 'addy':0, 'div':div}
       , 100,100);
   };
 
-  function externStartUI( board_option ){
+  function externStartUI( boardOption ){
     //Check for mobile and resize as needed
     var addx, addy;
 
-    if ( GO_UI_BIG ){
+    if ( BIG ){
       addx = 1500;
       addy = 1500;
-      GO_UI_stage.setWidth(GO_UI_stage.getWidth()+addx);
-      GO_UI_stage.setHeight(GO_UI_stage.getHeight()+addy);
-      GO_UI_ANIM = false;
+      stage.setWidth(stage.getWidth()+addx);
+      stage.setHeight(stage.getHeight()+addy);
+      ANIM = false;
     }
     else{
       addx = 0;
@@ -1338,46 +1306,46 @@ var ZX_GO_UI = (function(){
     }
 
     //Add to our board option
-    board_option['addx']         = addx;
-    board_option['addy']         = addy;
-    board_option['brdLayer']     = GO_UI_brdLayer;
-    board_option['UILayer']      = GO_UI_UILayer;
-    board_option['CurTurnLayer'] = GO_UI_CurTurnLayer;
+    boardOption['addx']         = addx;
+    boardOption['addy']         = addy;
+    boardOption['brdLayer']     = brdLayer;
+    boardOption['UILayer']      = UILayer;
+    boardOption['curTurnLayer'] = curTurnLayer;
 
     //Add our full UI
-    drawUI( board_option );
+    drawUI( boardOption );
 
     //Startup Background Work
     setBackground();
 
-    //Add the layers to the GO_UI_stage
+    //Add the layers to the stage
     //Remember the first layer added IS the lowest layer
     
-    GO_UI_stage.add(GO_UI_pausePage);
-    GO_UI_stage.add(GO_UI_newGamePage);
-    GO_UI_stage.add(GO_UI_scorePage);
+    stage.add(pausePage);
+    stage.add(newGamePage);
+    stage.add(scorePage);
 
-    GO_UI_stage.add(GO_UI_msgLayer);
-    if ( !GO_UI_BIG )
-      GO_UI_stage.add(GO_UI_UILayer);
+    stage.add(msgLayer);
+    if ( !BIG )
+      stage.add(UILayer);
     
-    GO_UI_stage.add(GO_UI_brdLayer);
-    GO_UI_stage.add(GO_UI_FadeLayer);
-    GO_UI_stage.add(GO_UI_cursorLayer);
+    stage.add(brdLayer);
+    stage.add(fadeLayer);
+    stage.add(cursorLayer);
     
-    if ( !GO_UI_BIG )
-      GO_UI_stage.add(GO_UI_CurTurnLayer);
+    if ( !BIG )
+      stage.add(curTurnLayer);
     
-    if ( GO_UI_ANIM ){
-      GO_UI_stage.setOpacity(0.0);
+    if ( ANIM ){
+      stage.setOpacity(0.0);
       (new Kinetic.Animation(function(frame) {
-         GO_UI_stage.setOpacity( (frame.time/1000) );
+         stage.setOpacity( (frame.time/1000) );
          if ( frame.time >= 1000 ){
-           GO_UI_stage.setOpacity(1.0);
+           stage.setOpacity(1.0);
            this.stop();
            startAfterFade();
          }
-       }, GO_UI_stage)).start();
+       }, stage)).start();
      }
      else
        startAfterFade();
@@ -1402,10 +1370,10 @@ var ZX_GO_UI = (function(){
           externCreateBoard(div , MODE);
         }
       else
-        WriteMsg(GO_UI_msgLayer, "CreateBoard called. Too many divs" );
+        WriteMsg(msgLayer, "CreateBoard called. Too many divs" );
     }
     else
-      WriteMsg(GO_UI_msgLayer, "CreateBoard called. Too few divs" ); 
+      WriteMsg(msgLayer, "CreateBoard called. Too few divs" ); 
   };
 
   this.StartUI = function( div, MODE ){
