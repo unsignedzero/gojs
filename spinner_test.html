@@ -16,127 +16,107 @@
   <body>
     <div id="container"></div>
     <script>
+
+      function drawCircle(localLayer, x, y, radius){
+      
+        x += radius;
+        y += radius;
+     
+        var bendY = 240;
+        
+        var arc_end = Math.sin(Math.PI/4);
+        var arc_mid = Math.tan(Math.PI/8);
+
+        function drawYinYangShape(x, y, radius){
+
+          function drawYinYangOutline(context, x, y,radius){
+            //Reference
+            //http://board.flashkit.com/board/showthread.php?369672-Draw-a-circle-with-quadratic-bezier-curves
+            context.beginPath();
+            context.moveTo(x+(radius<<1), y+radius); 
+            context.quadraticCurveTo(
+              radius+x+radius,-arc_mid*radius+y+radius,
+              arc_end*radius+x+radius,-arc_end*radius+y+radius);
+            context.quadraticCurveTo(
+              arc_mid*radius+x+radius,        -radius+y+radius,
+                              x+radius,       -radius+y+radius);
+            context.quadraticCurveTo(
+             -arc_mid*radius+x+radius,        -radius+y+radius,
+             -arc_end*radius+x+radius,-arc_end*radius+y+radius);
+            context.quadraticCurveTo(
+                     -radius+x+radius,-arc_mid*radius+y+radius,
+                     -radius+x+radius,                y+radius);
+            context.bezierCurveTo(
+                             (radius>>1)+x,radius+y-bendY,
+               ((radius   )+(radius>>1))+x,radius+y+bendY, 
+                             (radius<<1)+x,radius+y);
+            context.closePath();
+          };
+         
+          return new Kinetic.Shape({
+            x: x,
+            y: y,
+            fill: 'black',
+            
+            drawFunc: function(canvas) {
+              drawYinYangOutline(canvas.getContext(), x, y, radius);
+              canvas.fillStroke(this);
+            },
+            
+            offset: [x+radius,y+radius],
+            drawHitFunc: function(canvas) {
+              drawYinYangOutline(canvas.getContext(), x, y, radius);
+              canvas.fillStroke(this);
+            },
+          });
+        }
+
+        var circle = drawYinYangShape(x,y,350);
+
+        var outline = new Kinetic.Circle({
+          x: x,
+          y: y,
+          radius: radius,
+          stroke: 'black',
+          strokeWidth: 2,
+        });
+
+        var angularSpeed = Math.PI / 2;
+        var clickCount = 0;
+        var anim = new Kinetic.Animation(function(frame){
+            var angleDiff = clickCount*frame.timeDiff*angularSpeed /1000;
+            circle.rotate(angleDiff);
+          },localLayer);
+
+        anim.start();
+          
+        //Ensures that a click on either object spins it
+        circle.on('mousedown tap', function(){
+          clickCount +=1;
+        });
+
+        outline.on('mousedown tap', function(){
+          clickCount +=1;
+        });
+
+        outline.on('mouseover touchmove', function(){
+          clickCount +=1;
+        });
+        
+        localLayer.add(outline);
+        localLayer.add(circle);  
+      
+      }
+
       var stage = new Kinetic.Stage({
         container: 'container',
         width: 800,
         height: 800,
       });
-      
+
       var MainLayer = new Kinetic.Layer();
-
-      var _radius = 350;
       
-      function drawCircle( _layer, _x , _y ){
-      
-         _x += _radius;
-         _y += _radius;
-     
-        var _testy2 = 240;
-        
-        var arc_end = Math.sin(Math.PI/4);
-        var arc_mid = Math.tan(Math.PI/8);
-         
-        var circle = new Kinetic.Shape({
-          x: _x,
-          y: _y,
-          
-          drawFunc: function(canvas) {
-            //Reference
-            //http://board.flashkit.com/board/showthread.php?369672-Draw-a-circle-with-quadratic-bezier-curves
-            var context = canvas.getContext();
-            context.beginPath();
-            context.moveTo(_x+(_radius<<1), _y+_radius); 
-            context.quadraticCurveTo(
-              _radius+_x+_radius,-arc_mid*_radius+_y+_radius,
-              arc_end*_radius+_x+_radius,-arc_end*_radius+_y+_radius);
-            context.quadraticCurveTo(
-              arc_mid*_radius+_x+_radius,        -_radius+_y+_radius,
-                              _x+_radius,        -_radius+_y+_radius);
-            context.quadraticCurveTo(
-             -arc_mid*_radius+_x+_radius,        -_radius+_y+_radius,
-             -arc_end*_radius+_x+_radius,-arc_end*_radius+_y+_radius);
-            context.quadraticCurveTo(
-                     -_radius+_x+_radius,-arc_mid*_radius+_y+_radius,
-                     -_radius+_x+_radius,                 _y+_radius);
-            context.bezierCurveTo(
-                             (_radius>>1) +_x,_radius+_y-_testy2,
-               ((_radius   )+(_radius>>1))+_x,_radius+_y+_testy2, 
-                             (_radius<<1) +_x,_radius+_y);
-            context.closePath();
-            canvas.fillStroke(this);
-          },
-          fill: 'black',
-          //stroke: 'black',
-          //strokeWidth: 2,
-          
-          offset: [_x+_radius,_y+_radius],
-          drawHitFunc: function(canvas) {
-            var context = canvas.getContext();
-            context.beginPath();
-            context.moveTo(_x+(_radius<<1), _y+_radius); 
-            context.quadraticCurveTo(
-              _radius+_x+_radius,-arc_mid*_radius+_y+_radius,
-              arc_end*_radius+_x+_radius,-arc_end*_radius+_y+_radius);
-            context.quadraticCurveTo(
-              arc_mid*_radius+_x+_radius,        -_radius+_y+_radius,
-                              _x+_radius,        -_radius+_y+_radius);
-            context.quadraticCurveTo(
-             -arc_mid*_radius+_x+_radius,        -_radius+_y+_radius,
-             -arc_end*_radius+_x+_radius,-arc_end*_radius+_y+_radius);
-            context.quadraticCurveTo(
-                     -_radius+_x+_radius,-arc_mid*_radius+_y+_radius,
-                     -_radius+_x+_radius,                 _y+_radius);
-            context.bezierCurveTo(
-                             (_radius>>1) +_x,_radius+_y-_testy2,
-               ((_radius   )+(_radius>>1))+_x,_radius+_y+_testy2, 
-                             (_radius<<1) +_x,_radius+_y);
-            context.closePath();
-            canvas.fillStroke(this);
-          },
-        });
-
-        circle.on('mousedown tap', function(){        
-          var angularSpeed = Math.PI / 2;
-          (new Kinetic.Animation(function(frame){
-            var angleDiff = frame.timeDiff * angularSpeed / 1000;
-            circle.rotate(angleDiff);
-          },_layer).start());
-          
-        });
-        
-        var outline = new Kinetic.Circle({
-          x: _x,
-          y: _y,
-          radius: _radius,
-          stroke: 'black',
-          strokeWidth: 2,
-        });
-
-        //Ensures that a click on either object spins it
-        outline.on('mousedown tap', function(){
-          var angularSpeed = Math.PI / 2;
-          (new Kinetic.Animation(function(frame){
-            var angleDiff = frame.timeDiff * angularSpeed / 1000;
-            circle.rotate(angleDiff);
-          },_layer).start());
-          
-        });
-
-        outline.on('mouseover touchmove', function(){
-          var angularSpeed = Math.PI / 2;
-          (new Kinetic.Animation(function(frame){
-            var angleDiff = frame.timeDiff * angularSpeed / 1000;
-            circle.rotate(angleDiff);
-          },_layer).start());
-          
-        });
-        
-        _layer.add(outline);
-        _layer.add(circle);  
-      
-      }
-      
-      drawCircle(MainLayer,20,20);
+      drawCircle(MainLayer, 20, 20, 350);
       
       stage.add(MainLayer);
       

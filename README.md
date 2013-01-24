@@ -40,7 +40,7 @@ Created by unsignedzero and started on 12-28-2012 as an idea.
 2. Add to spinner page (DONE)
   * Capture clicks
 3. Create "hook" for multiplayer?
-* Unpollute General Namespace
+* Unpollute General Namespace (100%)
 * Create non-anim version
 * Mobile test (20%)
 
@@ -77,6 +77,10 @@ to another
 
 # Version/Changelog #
 
+* Cleaned up spinner tests. Unpopulated global namespace
+* Converted fors in key spots to whiles to improve speed
+* Removed the GO\_UI\_ name space in front of variable names
+* Created code for menus, not working
 * Added new goals and browser testing to readme
 
 #### 0.7.1.0 [01-21-2013] #

@@ -1,14 +1,14 @@
 ﻿/*Go board Engine
  *Created by David Tran
  *on 1-3-2013
- *Version 0.7.1.0
- *Last modified 01-23-2013
+ *Version 0.7.1.1
+ *Last modified 01-24-2013
  */
 
 //Board Class
 
 
-zxGoBoard = function( size, MODE ) {
+zxGoBoard = function( size, BoardMODE ) {
 
   var DEBUG = false;
 
@@ -20,7 +20,7 @@ zxGoBoard = function( size, MODE ) {
   var EMPTY_PIECE   = 0;
   var NEUTRAL_PIECE = 100;
 
-  var _MODE = MODE;
+  var MODE = BoardMODE;
   /*0 Free, no rules
    *1 Stone Limiter, There are only a finite amount of stones
    *2 KO, KO blocked
@@ -28,11 +28,11 @@ zxGoBoard = function( size, MODE ) {
    */
 
   //Local
-  var _Board      = [];
-  var _History    = [];
-  var _BoardHash  = {};
+  var Board      = [];
+  var History    = [];
+  var BoardHash  = {};
 
-  var _StoneCount;
+  var StoneCount;
 
   //HELPER VAR
   var i;
@@ -45,17 +45,19 @@ zxGoBoard = function( size, MODE ) {
 
   //Constructor WORK
 
-  for( i = 0 ; i < MAX ; i++ )
-    _Board.push(EMPTY_PIECE);
+  i = -1;
+  while( ++i < MAX )
+  //for( i = 0 ; i < MAX ; i++ )
+    Board.push(EMPTY_PIECE);
 
-  if ( _MODE&1 ){
+  if ( MODE&1 ){
     if ( MAX&1 )
-       _StoneCount = [ 2+(MAX>>1), 2+(MAX>>1) , 0 , 0];
+       StoneCount = [2+(MAX>>1), 2+(MAX>>1), 0, 0];
     else
-       _StoneCount = [ MAX>>1, MAX>>1 , 0 , 0];
+       StoneCount = [MAX>>1, MAX>>1, 0, 0];
   }
   else{
-    _StoneCount = [];
+    StoneCount = [];
   }
 
   /***************************************************************************/
@@ -101,17 +103,21 @@ zxGoBoard = function( size, MODE ) {
   function cloneBoard(){
     //Returns a deep copy of the board
 
+    /*
     var newBoard = [];
-    for( i = 0 ; i < MAX ; i++ )
-      newBoard.push(_Board[i]);
-    //return $.extend(true,[],_Board);
-    return newBoard;
+    i = -1;
+    while( ++i < MAX )
+    //for( i = 0 ; i < MAX ; i++ )
+      newBoard.push(Board[i]);
+     */
+    //return newBoard;
+    return $.extend(true,[],Board);
   };
 
   function cloneStoneCount(){
     //Returns a deep copy of the StoneCount
 
-    return $.extend(true,[],_StoneCount);
+    return $.extend(true,[],StoneCount);
   };
 
   function resizeBoard( size ){
@@ -120,11 +126,12 @@ zxGoBoard = function( size, MODE ) {
     BOARD_SIZE    = size;
     MAX           = BOARD_SIZE * BOARD_SIZE;
 
-    _Board = [];
+    Board = [];
 
-    for ( i = 0; i < MAX ; i++ ){
-      _Board.push( EMPTY_PIECE );
-    }
+    i = -1;
+    while( ++i < MAX )
+    //for ( i = 0; i < MAX ; i++ )
+      Board.push( EMPTY_PIECE );
 
     clearSupport();
 
@@ -133,26 +140,27 @@ zxGoBoard = function( size, MODE ) {
   function clearBoard(){
     //Clears the board
 
-    for ( i = 0; i < MAX ; i++ ){
-      _Board[i] = EMPTY_PIECE;
-    }
+    i = -1;
+    while( ++i < MAX )
+    //for ( i = 0; i < MAX ; i++ )
+      Board[i] = EMPTY_PIECE;
 
     clearSupport();
   };
 
   function clearSupport(){
     //Cleans up the board's extra data
-    if ( _MODE&1 ){
+    if ( MODE&1 ){
       if ( MAX&1 )
-         _StoneCount = [ 2+(MAX>>1), 2+(MAX>>1) , 0 , 0];
+         StoneCount = [ 2+(MAX>>1), 2+(MAX>>1) , 0 , 0];
       else
-         _StoneCount = [ MAX>>1, MAX>>1 , 0 , 0];
+         StoneCount = [ MAX>>1, MAX>>1 , 0 , 0];
     }
 
-    if ( _MODE&2 )
-      _BoardHash  = {};
-    if ( _MODE&4 )
-     _History     = [];
+    if ( MODE&2 )
+      BoardHash  = {};
+    if ( MODE&4 )
+     History     = [];
 
 
   };
@@ -162,7 +170,7 @@ zxGoBoard = function( size, MODE ) {
 
     if ( pos < 0 || pos >= MAX )
       return -1;
-    return stoneRemover(_Board[pos],pos);
+    return stoneRemover(Board[pos],pos);
   };
 
   function stoneRemover( color, pos ){
@@ -179,20 +187,20 @@ zxGoBoard = function( size, MODE ) {
 
     while ( queue.length != 0 ){
       pos = queue.pop();
-      if ( pos != -1 && _Board[pos] == color ){
+      if ( pos != -1 && Board[pos] == color ){
         count +=1;
-        _Board[pos] = EMPTY_PIECE;
+        Board[pos] = EMPTY_PIECE;
         if ( (i = left( pos)) != -1 )
-          if ( _Board[i] == color )
+          if ( Board[i] == color )
             queue.push(i);
         if ( (i = right(pos)) != -1 )
-          if ( _Board[i] == color )
+          if ( Board[i] == color )
             queue.push(i);
         if ( (i = up(   pos)) != -1 )
-          if ( _Board[i] == color )
+          if ( Board[i] == color )
             queue.push(i);
         if ( (i = down( pos)) != -1 )
-          if ( _Board[i] == color )
+          if ( Board[i] == color )
             queue.push(i);
       }
     }
@@ -206,7 +214,7 @@ zxGoBoard = function( size, MODE ) {
 
     if ( pos < 0 || pos >= MAX )
       return false;
-    return libertyCheck(_Board[pos],pos);
+    return libertyCheck(Board[pos],pos);
   };
 
   function libertyCheck ( color, pos ){
@@ -269,8 +277,10 @@ zxGoBoard = function( size, MODE ) {
     var updateColor    = [];
 
     //Find all empty spots and add it
-    for( i = 0 ; i < MAX ; i++ )
-      if ( _Board[i] == EMPTY_PIECE )
+    i = -1;
+    while( ++i < MAX )
+    //for( i = 0 ; i < MAX ; i++ )
+      if ( Board[i] == EMPTY_PIECE )
         emptySpot.push(i);
 
     //Algorithm for updating the squares
@@ -289,13 +299,15 @@ zxGoBoard = function( size, MODE ) {
         hasP1 = hasP2 = false;
 
         //For every possible neighbor
-        for( j = 0 ; j < directionCount ; j++ ){
+        j = -1;
+        while( ++j < directionCount ){
+        //for( j = 0 ; j < directionCount ; j++ ){
           if ( ( k = direction[j](i) ) != -1 ){
-            if ( _Board[k] == P1STONE ){
+            if ( Board[k] == P1STONE ){
               //alert("At pos" + i );
               hasP1 = true;
             }
-            else if ( _Board[k] == P2STONE ){
+            else if ( Board[k] == P2STONE ){
               hasP2 = true;
             }
           }
@@ -337,8 +349,10 @@ zxGoBoard = function( size, MODE ) {
       //Add in the new pieces
       piecesToColor = updateSpot.length;
 
-      for( i = 0 ; i < piecesToColor ; i++ ){
-        _Board[updateSpot.pop()] = updateColor.pop();
+      i = -1;
+      while( ++i < piecesToColor ){
+      //for( i = 0 ; i < piecesToColor ; i++ ){
+        Board[updateSpot.pop()] = updateColor.pop();
       }
 
       emptySpot    = newEmptySpot;
@@ -348,8 +362,8 @@ zxGoBoard = function( size, MODE ) {
 
     //Account for prisoners
 
-    P1Score += _StoneCount[3];
-    P2Score += _StoneCount[2];
+    P1Score += StoneCount[3];
+    P2Score += StoneCount[2];
 
     return [ P1Score , P2Score ];
   };
@@ -365,22 +379,21 @@ zxGoBoard = function( size, MODE ) {
     var mid    = cloneBoard();
     var output = [];
 
-    for( i = 0 ; i < BOARD_SIZE ; i++ )
+    i = -1;
+    while( ++i < BOARD )
+    //for( i = 0 ; i < BOARD_SIZE ; i++ )
       output.push(mid.slice(i,BOARD_SIZE+i).join(""));
     alert(output.join("\n"));
   };
 
   /////Main Functions
   this.curMode = function(){
-    if ( _MODE == 0 )
-      return [0,"unlimited"];
-    else
-      return [1,"real"];
+    return MODE;
   }
 
   this.stoneCount = function(){
     //Returns a copy of the current stoneCount
-    return _MODE&1 ? cloneStoneCount() : [0,0,0,0];
+    return MODE&1 ? cloneStoneCount() : [0,0,0,0];
   }
 
   this.curState = function(){
@@ -412,21 +425,21 @@ zxGoBoard = function( size, MODE ) {
       return false
 
     //Piece already contained
-    if ( _Board[pos] != EMPTY_PIECE )
+    if ( Board[pos] != EMPTY_PIECE )
       return false;
 
     //Out of stone
-    if ( (  _MODE & 1) && _StoneCount[colorPiece] == 0 )
+    if ( (  MODE & 1) && StoneCount[colorPiece] == 0 )
       return false;
 
     //At this point, the move is valid but...
-    _Board[pos] = color;
+    Board[pos] = color;
     isValid = true;
 
     //Check Hash
-    if ( _MODE&2 ){
+    if ( MODE&2 ){
       hash_val = this.hash();
-      if ( _BoardHash[hash_val] != undefined )
+      if ( BoardHash[hash_val] != undefined )
         return false;
     }
 
@@ -438,9 +451,11 @@ zxGoBoard = function( size, MODE ) {
     }
 
     //Check neighbors for capture
-    for( j = 0 ; j < directionCount ; j++ )
+    j = -1;
+    while( ++j < directionCount )
+    //for( j = 0 ; j < directionCount ; j++ )
       if ( ( i =  direction[j](pos) ) != -1 )
-        if ( _Board[i] != color )
+        if ( Board[i] != color )
           if ( hasLiberty( i ) == false ){
             stoneCapture += canRemoveStones( i );
             isValid = true;
@@ -449,23 +464,23 @@ zxGoBoard = function( size, MODE ) {
     //Will this new group live?
     if ( !isValid ){
       //NO
-      _Board[pos] = EMPTY_PIECE;
+      Board[pos] = EMPTY_PIECE;
     }
     else{
       //YES
       //Update Stone Count
-      if ( _MODE&1 ){
-        _StoneCount[        colorPiece  ] -= 1;
-        _StoneCount[ 2 + (1^colorPiece) ] += stoneCapture;
+      if ( MODE&1 ){
+        StoneCount[     colorPiece ] -= 1;
+        StoneCount[2+(1^colorPiece)] += stoneCapture;
       }
 
       //Update Hash
-      if ( _MODE&2 )
-        _BoardHash[hash_val] = true;
+      if ( MODE&2 )
+        BoardHash[hash_val] = true;
 
       //Update History
-      if ( _MODE&4 )
-        _History.push([pos,color_id]);
+      if ( MODE&4 )
+        History.push([pos,color_id]);
     }
 
     return isValid;

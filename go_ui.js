@@ -1,7 +1,7 @@
 /*Created by David Tran (unsignedzero)
  *on 1-3-2013
- *Version 0.7.1.0
- *Last modified 01-23-2013
+ *Version 0.7.1.1
+ *Last modified 01-24-2013
  *This code draws an interactive GO board on the screen
  *allowing two users to play the game
  */
@@ -117,7 +117,9 @@ var zxGoUI = (function(){
       strokeWidth: 2
     }));
 
-    for( i = 0 ; i < div ; i++ ){
+    i = -1;
+    while( i++ < div ){
+    //for( i = 0 ; i < div ; i++ ){
       //We cache the position of each hor/vert piece below
       tempPos = Math.floor( i * drawSize / div );
 
@@ -251,7 +253,9 @@ var zxGoUI = (function(){
       radius = 23;
 
     //Creates the clickable areas for the stones on the board
-    for ( i = 0 ; i < griddrawSize ; i++ ){
+    i = -1;
+    while( i++ < griddrawSize ){
+    //for ( i = 0 ; i < griddrawSize ; i++ ){
       temp = new Kinetic.Circle({
         x:           localX + Math.floor( ( i % divnew ) * drawSize / div ),
         y:           localy + Math.floor( Math.floor( i / divnew ) * drawSize / div ),
@@ -318,7 +322,9 @@ var zxGoUI = (function(){
     var deadPieces = [];
     max = brdArray.length;
     
-    for( i = 0 ; i < max ; i++ ){
+    i = -1;
+    while( ++i < max ){
+    //for( i = 0 ; i < max ; i++ ){
       //This case happens only when a piece is removed due to a capture
       if ( stoneBoard[i].color != brdArray[i] ){
         //Animation options here
@@ -358,7 +364,9 @@ var zxGoUI = (function(){
     fadeLayer.setOpacity(1.0);
     brdLayer.draw();
 
-    for( i = 0 ; i < max ; i++ ){
+    i = -1;
+    while( ++i < max ){
+    //for( i = 0 ; i < max ; i++ ){
       temp = stoneBoard[deadPieces.pop()];
       fadeLayer.add( new Kinetic.Circle({
         x:           temp.getX(),
@@ -373,7 +381,9 @@ var zxGoUI = (function(){
     }
     
     /*
-    for( i = 0 ; i < max ; i++ )
+    i = -1;
+    while( ++i < max ){
+    //for( i = 0 ; i < max ; i++ )
       stoneBoard[deadPieces[i]].setOpacity(0.0);
      */
 
@@ -403,7 +413,9 @@ var zxGoUI = (function(){
     var terrorityPieces      = [];
     max = brdArray.length;
     
-    for( i = 0 ; i < max ; i++ ){
+    i = -1;
+    while( ++i < max ){
+    //for( i = 0 ; i < max ; i++ ){
       if ( stoneBoard[i].color )
         deadPieces.push(i);
       else{
@@ -428,7 +440,9 @@ var zxGoUI = (function(){
     
     max = deadPieces.length;
 
-    for( i = 0 ; i < max ; i++ ){
+    i = -1;
+    while( ++i < max ){
+    //for( i = 0 ; i < max ; i++ ){
       temp = stoneBoard[deadPieces.pop()];
       fadeLayer.add( new Kinetic.Circle({
         x:           temp.getX(),
@@ -445,7 +459,9 @@ var zxGoUI = (function(){
     
     max = terrorityPieces.length;
     
-    for( i = 0 ; i < max ; i++ ){
+    i = -1;
+    while( ++i < max ){
+    //for( i = 0 ; i < max ; i++ ){
       pos  = terrorityPieces.pop();
       j = pos.pop();
       temp = stoneBoard[pos.pop()];
@@ -798,8 +814,11 @@ var zxGoUI = (function(){
       }
     }
 
-    max = statusObj.length;
-    for( i = 0 ; i < max ; i++)
+    maxi = statusObj.length;
+
+    i = -1;
+    while( ++i < maxi )
+    //for( i = 0 ; i < maxi ; i++)
       UILayer.add( statusObj[i] );
    
     //Create Text
