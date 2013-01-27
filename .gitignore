@@ -1,4 +1,4 @@
-#Notepad++ Extra
-*.js~
-*.js.swp
+#File Editor Extensions
+*.*~
 *.bak
+*.swp

@@ -103,15 +103,13 @@ zxGoBoard = function( size, BoardMODE ) {
   function cloneBoard(){
     //Returns a deep copy of the board
 
-    /*
     var newBoard = [];
     i = -1;
     while( ++i < MAX )
     //for( i = 0 ; i < MAX ; i++ )
       newBoard.push(Board[i]);
-     */
-    //return newBoard;
-    return $.extend(true,[],Board);
+    return newBoard;
+    //return $.extend(true,[],Board);
   };
 
   function cloneStoneCount(){
@@ -234,9 +232,8 @@ zxGoBoard = function( size, BoardMODE ) {
       pos = queue.pop();
       if ( pos != -1 ){
         if( local_board[pos] == EMPTY_PIECE ){
-          if (DEBUG){
+          if (DEBUG)
             alert('-' + pos + '-');
-          }
           return true;
         }
         else if ( local_board[pos] == color ){
@@ -412,10 +409,7 @@ zxGoBoard = function( size, BoardMODE ) {
     //Checks if pos is a valid move
     //If so returns true else false
 
-    var hash_val;
-    var isValid;
-    var i,j;
-    var new_board;
+    var i, j, hash_val, isValid, newBoard;
     var colorPiece = color - 1;
     var enemyColor = color == 2 ? 1 : 2;
     var stoneCapture = 0;
@@ -432,6 +426,7 @@ zxGoBoard = function( size, BoardMODE ) {
     if ( (  MODE & 1) && StoneCount[colorPiece] == 0 )
       return false;
 
+
     //At this point, the move is valid but...
     Board[pos] = color;
     isValid = true;
@@ -439,8 +434,10 @@ zxGoBoard = function( size, BoardMODE ) {
     //Check Hash
     if ( MODE&2 ){
       hash_val = this.hash();
-      if ( BoardHash[hash_val] != undefined )
+      if ( BoardHash[hash_val] != undefined ){
+        Board[pos] = EMPTY_PIECE;
         return false;
+      }
     }
 
     //Will this move be suicidal?

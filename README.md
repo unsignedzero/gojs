@@ -77,6 +77,11 @@ to another
 
 # Version/Changelog #
 
+* JS Keyboard Library Added
+* Bugfix, with hash, invalid suicidal moves were allowed
+
+#### 0.7.1.1 [01-24-2013] #
+
 * Cleaned up spinner tests. Unpopulated global namespace
 * Converted fors in key spots to whiles to improve speed
 * Removed the GO\_UI\_ name space in front of variable names

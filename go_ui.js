@@ -1,7 +1,7 @@
 /*Created by David Tran (unsignedzero)
  *on 1-3-2013
  *Version 0.7.1.1
- *Last modified 01-24-2013
+ *Last modified 01-27-2013
  *This code draws an interactive GO board on the screen
  *allowing two users to play the game
  */
@@ -255,7 +255,7 @@ var zxGoUI = (function(){
     //Creates the clickable areas for the stones on the board
     i = -1;
     while( i++ < griddrawSize ){
-    //for ( i = 0 ; i < griddrawSize ; i++ ){
+    //for ( i = 0 ; i < griddrawSize ; i++ )
       temp = new Kinetic.Circle({
         x:           localX + Math.floor( ( i % divnew ) * drawSize / div ),
         y:           localy + Math.floor( Math.floor( i / divnew ) * drawSize / div ),
@@ -280,7 +280,7 @@ var zxGoUI = (function(){
         if (this.getOpacity() == 0 ){
 
           if ( checkValidMove(this.posID, curPTurn + 1 ) ){
-            this.setOpacity(1);
+            this.setOpacity(1.0);
 
             updateCursor(this.getX(),this.getY());
 
