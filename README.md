@@ -1,4 +1,4 @@
-# GO JS #
+i GO JS #
 
 This code project has two pieces a visual front that is created using
 mainly kineticJS and a backend which uses some jQuery. Each end can be used
@@ -77,6 +77,12 @@ to another
 
 # Version/Changelog #
 
+#### 0.7.1.2 [02-03-2013] #
+
+* Removed commented for loops
+* Bugfix, stone count doesn't update correctly until first move
+* Counting the number of stones left/number of stones captured are seperate
+  MODEs
 * JS Keyboard Library Added
 * Bugfix, with hash, invalid suicidal moves were allowed
 
