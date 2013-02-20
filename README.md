@@ -77,6 +77,9 @@ to another
 
 # Version/Changelog #
 
+* Cleaned up extra spaces on go_ui and go_engine.js code
+* Added listening false to layers that don't require listening
+
 #### 0.7.1.2 [02-03-2013] #
 
 * Removed commented for loops
