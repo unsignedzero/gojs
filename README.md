@@ -1,4 +1,5 @@
-i GO JS #
+
+# GO JS #
 
 This code project has two pieces a visual front that is created using
 mainly kineticJS and a backend which uses some jQuery. Each end can be used
@@ -7,7 +8,7 @@ someone else at the same machine. As this is currently a WIP, not all features
 that one would except in a GO game are implemented. Please see the TODO List below
 for more details.
 
-To run this game on your local system, clone this repo and run start.html.
+To run this game on your local system, clone this repo and run index.html.
 Included are the necessary libraries to run this. The other HTML files are
 incomplete demos.
 
@@ -21,7 +22,7 @@ Created by unsignedzero and started on 12-28-2012 as an idea.
 * Add in-game timer (100%)
 * Change Right Column?
   * Add logo?
-  * Add Turn Counter? 
+  * Add Turn Counter? (100%)
   * Add prison exchange (0%)
 * Create menu for local settings (0%)
 * Create menu to display end game stats (0%)
@@ -77,6 +78,8 @@ to another
 
 # Version/Changelog #
 
+* Renamed files to reflect their new usage
+* Created basic generic class for title page
 * Cleaned up extra spaces on go_ui and go_engine.js code
 * Added listening false to layers that don't require listening
 
