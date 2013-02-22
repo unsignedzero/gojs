@@ -78,6 +78,7 @@ to another
 
 # Version/Changelog #
 
+* Bugfix, Bad reference name in title page
 * Renamed files to reflect their new usage
 * Created basic generic class for title page
 * Cleaned up extra spaces on go_ui and go_engine.js code
