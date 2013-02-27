@@ -78,6 +78,10 @@ to another
 
 # Version/Changelog #
 
+#### 0.7.2.0 [02-27-2013] # 
+
+* Fixed warnings from test on js files
+* Created basic JSLint Test
 * Bugfix, Bad reference name in title page
 * Renamed files to reflect their new usage
 * Created basic generic class for title page

@@ -67,7 +67,7 @@
             drawHitFunc: function(canvas) {
               drawYinYangOutline(canvas.getContext(), x, y, radius);
               canvas.fillStroke(this);
-            },
+            }
           });
         }
 
@@ -78,7 +78,7 @@
           y: y,
           radius: radius,
           stroke: 'black',
-          strokeWidth: 2,
+          strokeWidth: 2
         });
 
         var angularSpeed = Math.PI / 2;
@@ -111,7 +111,7 @@
       var stage = new Kinetic.Stage({
         container: 'container',
         width: 800,
-        height: 800,
+        height: 800
       });
 
       var MainLayer = new Kinetic.Layer();

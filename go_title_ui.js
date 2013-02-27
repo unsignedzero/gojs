@@ -1,7 +1,7 @@
 ﻿/*Created by David Tran (unsignedzero)
  *on 1-13-2013
- *Version 0.7.1.2
- *Last modified 02-20-2013
+ *Version 0.7.2.0
+ *Last modified 02-27-2013
  *This code creates the interactive go Title
  */
 
@@ -22,7 +22,7 @@ zxGoTitle = function(canvasName, width, height){
      x += radius;
      y += radius;
 
-    var bendValue = radius*240/380
+    var bendValue = radius*240/380;
 
     var arc_end = Math.sin(Math.PI/4);
     var arc_mid = Math.tan(Math.PI/8);
@@ -67,7 +67,7 @@ zxGoTitle = function(canvasName, width, height){
       drawHitFunc: function(canvas) {
         drawOutline( canvas.getContext() );
         canvas.fillStroke(this);
-      },
+      }
       });
 
     }
@@ -116,7 +116,7 @@ zxGoTitle = function(canvasName, width, height){
     var outline = new Kinetic.Circle({
       x: x,
       y: y,
-      radius: radius, stroke: 'black', strokeWidth: 2,
+      radius: radius, stroke: 'black', strokeWidth: 2
     });
 
     outline.on('mouseout touchstart', function(){
@@ -127,7 +127,7 @@ zxGoTitle = function(canvasName, width, height){
       mouse_on = false;
 
       defaultSpinAnim.start();
-      if ( yinYangStartAnim.frame.time == 0 && yinYangEndAnim.frame.time == 0 && to_end ){
+      if ( yinYangStartAnim.frame.time === 0 && yinYangEndAnim.frame.time === 0 && to_end ){
         //outline.setFill('white');
         yinYangEndAnim.start();
       }
@@ -143,7 +143,7 @@ zxGoTitle = function(canvasName, width, height){
     });
 
     outline.on('mousedown tap', function(){
-      if ( yinYangStartAnim.frame.time == 0 && yinYangEndAnim.frame.time == 0 && !to_end )
+      if ( yinYangStartAnim.frame.time === 0 && yinYangEndAnim.frame.time === 0 && !to_end )
         yinYangStartAnim.start();
     });
 
@@ -152,7 +152,7 @@ zxGoTitle = function(canvasName, width, height){
 
     localLayer.add(outline);
 
-  };
+  }
 
   function createCanvas(){
     var min = width > height ? height : width;
@@ -161,7 +161,7 @@ zxGoTitle = function(canvasName, width, height){
     var stage = new Kinetic.Stage({
       container: canvasName,
       width: width,
-      height: height,
+      height: height
     });
 
     var MainLayer = new Kinetic.Layer();
@@ -169,10 +169,10 @@ zxGoTitle = function(canvasName, width, height){
     drawCircleTitle(MainLayer, padding + (width-min-padding)/2,padding + (height-min-padding)/2, min/2);
 
     stage.add(MainLayer);
-  };
+  }
 
   this.setup = function(){
     createCanvas();
   };
 
-}
+};
