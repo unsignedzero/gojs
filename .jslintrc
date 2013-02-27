@@ -1,0 +1,21 @@
+/**Jslint config file
+ *Created by David Tran (unsignedzero)
+ *
+ *To use run jslint -process <fname> in a directory with this file
+ *
+ *JSlint works with js files and html/css with js.
+ */
+
+/*jslint browser: true,
+         debug: true,
+         evil: false,
+         glovar: false,
+         nomen: true,
+         on: true,
+         regexp: true
+         white: true
+         undef: true,
+*/
+
+/*global Kinetic, jQuery, $*/
+/* vim: setft=javascript*/

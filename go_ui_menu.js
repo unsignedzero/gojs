@@ -1,8 +1,8 @@
 /*Go board
  *Created by = David Tran 
  *on 01-11-2013
- *Version 0.6.4.1
- *Last modified 01-15-2013
+ *Version 0.7.2.0
+ *Last modified 02-27-2013
  */
 
 //////////////////////////////////////////////////////////////////////////////
@@ -36,7 +36,7 @@ function drawBackground( _layer ){
     
     fillLinearGradientStartPoint: [ GO_MENU_Stage.getWidth(),  GO_MENU_Stage.getHeight()],
     fillLinearGradientEndPoint:   [-GO_MENU_Stage.getWidth(), -GO_MENU_Stage.getHeight()],
-    fillLinearGradientColorStops: [0.0, '#333', 0.5, '#BBB'],
+    fillLinearGradientColorStops: [0.0, '#333', 0.5, '#BBB']
   }));
 
    _layer.draw();
@@ -56,8 +56,7 @@ function drawText( _layer, _string, _x, _y, _size ){
     shadowColor:   'white',
     shadowOpacity:  1.0,
 
-    fill:           'black',
-
+    fill:           'black'
   });
 
   temp.setOffset({
@@ -78,7 +77,7 @@ function createOptions( _layer , _x, _y, _string ){
     radius:      _radius,
     stroke:      'black',
     strokeWidth: 2,
-    fill:        'white',
+    fill:        'white'
   });
 
   temp.on( 'mousedown' , function(){
@@ -113,8 +112,7 @@ function createOptions( _layer , _x, _y, _string ){
     shadowColor:   'black',
     shadowOpacity:  1.0,
 
-    fill:          'white',
-
+    fill:          'white'
   });
  
   _layer.add(temp);

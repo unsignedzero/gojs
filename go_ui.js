@@ -1,7 +1,7 @@
 /*Created by David Tran (unsignedzero)
  *on 1-3-2013
- *Version 0.7.1.2
- *Last modified 02-20-2013
+ *Version 0.7.2.0
+ *Last modified 02-27-2013
  *This code draws an interactive GO board on the screen
  *allowing two users to play the game
  */
@@ -64,16 +64,16 @@ var zxGoUI = (function(){
   var cursorLayer  = new Kinetic.Layer();
   var brdLayer     = new Kinetic.Layer();
   var msgLayer     = new Kinetic.Layer({
-    listening: false,
+    listening: false
   });
   var UILayer      = new Kinetic.Layer();
   var fadeLayer    = new Kinetic.Layer({
-    listening: false,
+    listening: false
   });
   var curTurnLayer = new Kinetic.Layer();
 
   var devNullLayer = new Kinetic.Layer({
-    listening: false,
+    listening: false
   });
   
 /////////////////////////////////////////////////////////////////////////////
@@ -83,7 +83,7 @@ var zxGoUI = (function(){
     //Here we clear the layer of everything
     //(Note:To remove one node (graphic element) use the method remove
     localLayer.removeChildren();
-  };
+  }
 
 ////////////////////////////////////////////////////////////////////////////
 //Code to create and support the GO Grid
@@ -101,7 +101,7 @@ var zxGoUI = (function(){
 
     drawCursor(cursorLayer , sideLength , div);
     return interfaceArray;
-  };
+  }
  
   function drawGOBoard(localLayer, localX, localy, drawSize, div){
     //Draws the GO Board Background and the labels
@@ -112,6 +112,7 @@ var zxGoUI = (function(){
     var fontXShift  = -5;    //Sets the relative hor shift
     var fontYShift  = -50;   //Sets the position away from the board
     var i,j, tempPos, radius;
+    var border, delta;
 
   /////Draw Grid
     localLayer.add(new Kinetic.Rect({
@@ -123,8 +124,8 @@ var zxGoUI = (function(){
       strokeWidth: 2
     }));
 
-    i = -1;
-    while(i++ < div){
+    i = 0;
+    while(i < div){
       //We cache the position of each hor/vert piece below
       tempPos = Math.floor(i * drawSize / div);
 
@@ -135,7 +136,7 @@ var zxGoUI = (function(){
           text:       i+1,
           fontSize:   fontSize,
           fontFamily: 'Calibri',
-          Fill:       'black',
+          Fill:       'black'
         }));
       
       //Horizontal Line
@@ -143,7 +144,7 @@ var zxGoUI = (function(){
         points:       [localX,localy+tempPos,localX+drawSize,localy+tempPos],
         stroke:       '#000',
         strokeWidth:  2,
-        lineCap:      'butt',
+        lineCap:      'butt'
       }));
 
       //Vertical Text
@@ -153,7 +154,7 @@ var zxGoUI = (function(){
           text:       i+1,
           fontSize:   fontSize,
           fontFamily: 'Calibri',
-          Fill:       'black',
+          Fill:       'black'
         }));
 
       //Vertical Line
@@ -161,8 +162,9 @@ var zxGoUI = (function(){
         points:       [localX+tempPos,localy,localX+tempPos,localy+drawSize],
         stroke:       '#000',
         strokeWidth:  2,
-        lineCap:      'butt',
+        lineCap:      'butt'
       }));
+      i += 1;
     }
 
     //"Last" Numbers
@@ -173,7 +175,7 @@ var zxGoUI = (function(){
         text:       div+1,
         fontSize:   fontSize,
         fontFamily: 'Calibri',
-        Fill:       'black',
+        Fill:       'black'
       }));
 
     //Vertical Text
@@ -183,7 +185,7 @@ var zxGoUI = (function(){
         text:       div+1,
         fontSize:   fontSize,
         fontFamily: 'Calibri',
-        Fill:       'black',
+        Fill:       'black'
       }));
 
   /////Draws the extra dots on the board(reference points)
@@ -209,9 +211,9 @@ var zxGoUI = (function(){
       //For all other cases, we draw the outer ring with 3 piece gap
 
       else if(div >= 8){
-        var border = div >= 12 ? 3 : 2;
-        var delta  = (div>>1) - border;
-        for(i = 0 ; i <= 2 ; i++)
+        border = div >= 12 ? 3 : 2;
+        delta  = (div>>1) - border;
+        for(i = 0 ; i <= 2 ; i++){
           for(j = 0 ; j <= 2 ; j++)
             localLayer.add(new Kinetic.Circle({
               x:           localX + Math.floor((border + i * delta) * drawSize / div),
@@ -221,6 +223,7 @@ var zxGoUI = (function(){
               stroke:      'black',
               strokeWidth:  2
             }));
+        }
       }
     }
     //If not even and 7x7 or larger
@@ -228,9 +231,9 @@ var zxGoUI = (function(){
       //Here we draw the four corners that are diagonally 2 pieces gap
       //from the edge for 7x7, 9x9 and 11x11 and 3 otherwise
 
-      var border = div >= 12 ? 3 : 2;
-      var delta = div - (border<<1);
-      for(i = 0 ; i <= 1 ; i++)
+      border = div >= 12 ? 3 : 2;
+      delta = div - (border<<1);
+      for(i = 0 ; i <= 1 ; i++){
         for(j = 0 ; j <= 1 ; j++)
           localLayer.add(new Kinetic.Circle({
             x:           localX + Math.floor((border + i * delta) * drawSize / div),
@@ -240,8 +243,9 @@ var zxGoUI = (function(){
             stroke:      'black',
             strokeWidth:  2
           }));
+      }
     }
-  };
+  }
 
   function layGoStones(localLayer, localX, localy, drawSize, div){
     //This function takes the same args are drawGOBoard
@@ -258,8 +262,8 @@ var zxGoUI = (function(){
       radius = 23;
 
     //Creates the clickable areas for the stones on the board
-    i = -1;
-    while(i++ < griddrawSize){
+    i = 0;
+    while(i < griddrawSize){
       temp = new Kinetic.Circle({
         x:           localX + Math.floor((i % divnew) * drawSize / div),
         y:           localy + Math.floor(Math.floor(i / divnew) * drawSize / div),
@@ -281,15 +285,15 @@ var zxGoUI = (function(){
       //Modify this for the click area
       //CLICK
       temp.on('mousedown dbltap', function() {
-        if(this.getOpacity() == 0){
+        if(this.getOpacity() === 0){
 
           if(checkValidMove(this.posID, curPTurn + 1)){
             this.setOpacity(1.0);
 
             updateCursor(this.getX(),this.getY());
 
-            //this.setFill(this.getFill() == 'white' ? 'black' : 'white');
-            if(curPTurn == 0){
+            //this.setFill(this.getFill() === 'white' ? 'black' : 'white');
+            if(curPTurn === 0){
               curPTurn = 1;
               this.setFill('white');
               this.color = 1;
@@ -303,9 +307,11 @@ var zxGoUI = (function(){
             //Don't forget to redraw to show changes!
             localLayer.draw();
           }
+          /*
           else{
             //BAD MOVE
           }
+          */
         }
 
         if(DEBUG)
@@ -314,9 +320,10 @@ var zxGoUI = (function(){
 
       interfaceArray.push(temp);
       localLayer.add(temp);
+      i += 1;
     }
     return interfaceArray;
-  };
+  }
 
   function updateBoard(brdArray){
     //We will update the backend array to match the current array we are on
@@ -326,10 +333,10 @@ var zxGoUI = (function(){
     var deadPieces = [];
     max = brdArray.length;
     
-    i = -1;
-    while(++i < max){
+    i = 0;
+    while(i < max){
       //This case happens only when a piece is removed due to a capture
-      if(stoneBoard[i].color != brdArray[i]){
+      if(stoneBoard[i].color !== brdArray[i]){
         //Animation options here
 
         if(ANIM){
@@ -346,17 +353,18 @@ var zxGoUI = (function(){
           stoneBoard[i].setOpacity(0.0);
         }
       }
+      i += 1;
     }
 
     if(deadPieces.length > 0)
       drawBoardFade(deadPieces);
     
-  };
+  }
   
   function drawBoardFade(deadPieces){
     //This creates the "fade" effect for all pieces captured
 
-    if(deadPieces.length == 0)
+    if(deadPieces.length === 0)
       return;
 
     var temp;
@@ -367,8 +375,8 @@ var zxGoUI = (function(){
     fadeLayer.setOpacity(1.0);
     brdLayer.draw();
 
-    i = -1;
-    while(++i < max){
+    i = 0;
+    while(i < max){
       temp = stoneBoard[deadPieces.pop()];
       fadeLayer.add(new Kinetic.Circle({
         x:           temp.getX(),
@@ -380,13 +388,16 @@ var zxGoUI = (function(){
         strokeWidth: 2
       }));
       temp.setOpacity(0.0);
+      i += 1;
     }
     
     /*
-    i = -1;
-    while(++i < max)
+    i = 0;
+    while(i < max){
       stoneBoard[deadPieces[i]].setOpacity(0.0);
-     */
+      i += 1;
+    }
+    */
 
     brdLayer.draw();
 
@@ -402,7 +413,7 @@ var zxGoUI = (function(){
     }, fadeLayer);
 
     anim.start();
-  };
+  }
 
   function updateBoardFin(brdArray){
     //We will update the backend array to match the final array we are on
@@ -414,18 +425,19 @@ var zxGoUI = (function(){
     var terrorityPieces      = [];
     max = brdArray.length;
     
-    i = -1;
-    while(++i < max){
+    i = 0;
+    while(i < max){
       if(stoneBoard[i].color)
         deadPieces.push(i);
       else{
         terrorityPieces.push([i,brdArray[i]]);
       }
+      i += 1;
     }
 
     drawBoardFadeFin(deadPieces,terrorityPieces);
     
-  };
+  }
 
   function drawBoardFadeFin(deadPieces, terrorityPieces){
     //This draws the final grid, with territories shown as squares
@@ -440,8 +452,8 @@ var zxGoUI = (function(){
     
     max = deadPieces.length;
 
-    i = -1;
-    while(++i < max){
+    i = 0;
+    while(i < max){
       temp = stoneBoard[deadPieces.pop()];
       fadeLayer.add(new Kinetic.Circle({
         x:           temp.getX(),
@@ -454,12 +466,13 @@ var zxGoUI = (function(){
       }));
       temp.setOpacity(0.0);
       temp.color = 0;
+      i += 1;
     }
     
     max = terrorityPieces.length;
     
-    i = -1;
-    while(++i < max){
+    i = 0;
+    while(i < max){
       pos  = terrorityPieces.pop();
       j = pos.pop();
       temp = stoneBoard[pos.pop()];
@@ -470,12 +483,13 @@ var zxGoUI = (function(){
         width:       temp.getRadius()<<1,
         height:      temp.getRadius()<<1,
         offset:      [temp.getRadius(),temp.getRadius()],
-        fill:        j == 1 ? 'white': (j == 2 ? 'black' : "grey"),
+        fill:        j === 1 ? 'white': (j === 2 ? 'black' : "grey"),
         opacity:     1,
         stroke:      'black',
         strokeWidth: 2
       }));
       //temp.setOpacity(0.0);
+      i += 1;
     }
 
     fadeLayer.draw();
@@ -497,7 +511,7 @@ var zxGoUI = (function(){
       fadeLayer.draw();
     }
      
-  };
+  }
 /////////////////////////////////////////////////////////////////////////////
 //Code to create the cursor
   function drawCursor(localLayer , drawSize , div){
@@ -522,7 +536,7 @@ var zxGoUI = (function(){
       offset:      [sideLength>>1,sideLength>>1],
       fill:        '#777',
       opacity:     0.5,
-      strokeWidth: 2,
+      strokeWidth: 2
     });
  
     if(ANIM){
@@ -541,7 +555,7 @@ var zxGoUI = (function(){
     }
  
     cursor.on('mousedown dbltap', function() {
-      if(cursorAnim.frame.time == 0)
+      if(cursorAnim.frame.time === 0)
         passTurn();
     });
 
@@ -550,7 +564,7 @@ var zxGoUI = (function(){
     cursor.origX = localX;
     cursor.origY = localy;
 
-  };
+  }
 
   function updateCursor(localX , localy){
     //Moves the cursor to the right position, via anim, or just "jump"
@@ -582,7 +596,7 @@ var zxGoUI = (function(){
       cursor.setY(localy);
       cursorLayer.draw();
     }
-  };
+  }
 
 /////////////////////////////////////////////////////////////////////////////
 //Code to create and update the extra UI
@@ -598,7 +612,7 @@ var zxGoUI = (function(){
       stroke:       'black',
       strokeWidth:  2,
       fill:         '#999',
-      cornerRadius: 32,
+      cornerRadius: 32
     });
 
     temp.setOffset({
@@ -618,7 +632,7 @@ var zxGoUI = (function(){
       radius:      30,
       stroke:      'black',
       strokeWidth: 2,
-      fill:        'gray',
+      fill:        'gray'
     });
 
     curPStoneAnim = new Kinetic.Animation(function(frame) {
@@ -632,8 +646,8 @@ var zxGoUI = (function(){
         this.stop();
       }
       else if(frame.time > 500){
-        if(curPStoneAnim.half == false){
-          curPStonePiece.setFill(curPStonePiece.getFill() == 'white' ? 'black' : 'white'); 
+        if(curPStoneAnim.half === false){
+          curPStonePiece.setFill(curPStonePiece.getFill() === 'white' ? 'black' : 'white'); 
           this.half = true;
         }
       }
@@ -690,7 +704,7 @@ var zxGoUI = (function(){
     });
 
     curTurnLayer.add(curPStonePiece);
-  };
+  }
 
   function updatePStoneUI(curTurnLayer){
     //Changes the color piece in the PStoneUI
@@ -700,7 +714,7 @@ var zxGoUI = (function(){
       curPStoneAnim.stop();
 
       //Solves really fast clicks problem
-      curPStonePiece.setFill(curPTurn == 1 ? 'black' : 'white');
+      curPStonePiece.setFill(curPTurn === 1 ? 'black' : 'white');
 
       curPStoneAnim.frame.time = 0;
       curPStoneAnim.half = false;
@@ -708,10 +722,10 @@ var zxGoUI = (function(){
       curPStoneAnim.start();
     }
     else{
-      curPStonePiece.setFill(curPStonePiece.getFill() == 'white' ? 'black' : 'white'); 
+      curPStonePiece.setFill(curPStonePiece.getFill() === 'white' ? 'black' : 'white'); 
       curTurnLayer.draw();
     }
-  };
+  }
   
   function drawColumnUI(UILayer , shiftx, shifty, scaley){
    //Draws the right column UI (for future use) and other non-board UI
@@ -722,8 +736,8 @@ var zxGoUI = (function(){
     var curY;
     var i, maxi, j, maxj;
 
-    localX      = 630 + (shiftx == undefined ? 0 : shiftx);
-    localy      =  20 + (shifty == undefined ? 0 : shifty);
+    localX      = 630 + (shiftx === undefined ? 0 : shiftx);
+    localy      =  20 + (shifty === undefined ? 0 : shifty);
     width       = 160;
     height      = 560;
     font        = 'Calibri';
@@ -757,11 +771,11 @@ var zxGoUI = (function(){
         text:        i ? 'Captured' : 'Remaining',
         fontSize:    fontSize + 6,
         font:        font,
-        Fill:       'black',
+        Fill:       'black'
       });
       
       temp.setOffset({
-        x: temp.getWidth()>>1,
+        x: temp.getWidth()>>1
       });
 
       statusObj.push(temp);
@@ -796,7 +810,7 @@ var zxGoUI = (function(){
           text:        '0',
           fontSize:    fontSize + 12,
           font:        font,
-          Fill:       'black',
+          Fill:       'black'
         })); 
 
         statusObj.push(new Kinetic.Rect({
@@ -814,9 +828,11 @@ var zxGoUI = (function(){
 
     maxi = statusObj.length;
 
-    i = -1;
-    while(++i < maxi)
+    i = 0;
+    while(i < maxi){
       UILayer.add(statusObj[i]);
+      i += 1;
+    }
    
     //Create Text
     temp = new Kinetic.Text({
@@ -825,7 +841,7 @@ var zxGoUI = (function(){
       text:        'Go Game',
       fontSize:    fontSize + 6,
       font:        font,
-      Fill:       'black',
+      Fill:       'black'
     });
 
     //Aligns the text in the center. >>1 is /2 in this case
@@ -843,7 +859,7 @@ var zxGoUI = (function(){
       fontSize:    fontSize + 4,
       font:        font,
       Fill:       'black',
-      textColor:  'black',
+      textColor:  'black'
     });
 
     temp.setOffset({
@@ -866,7 +882,7 @@ var zxGoUI = (function(){
     });
 
     UILayer.add(temp);
-  };
+  }
 
   function updateStats(stoneCount){
     //Updatse the right column stats
@@ -898,17 +914,15 @@ var zxGoUI = (function(){
       //Update Board (to show territory)
       updateBoardFin(finalBoard);
 
+      /*
       //Fade Layer?
       if(ANIM){
-      }
-      else{
       }
 
       //Show stats and ask for new game?
       if(ANIM){
       }
-      else{
-      }
+      */
 
       //TEMP OUTPUT
       var tempoutput = "Game time: " + (clock.frame.time/1000) + "s | ";
@@ -936,7 +950,7 @@ var zxGoUI = (function(){
     updatePStoneUI(curTurnLayer);
     
     curPTurn ^=1;
-  };
+  }
 
   function checkValidMove(pos, colorid){
     //Checks IF the click is valid and PStoneUI, as needed
@@ -964,7 +978,7 @@ var zxGoUI = (function(){
     UILayer.draw();
 
     return valid;
-  };
+  }
 
   function cleaningGame(){
     //Resets game for next "round"
@@ -998,11 +1012,11 @@ var zxGoUI = (function(){
     updateStats([0,0,0,0]);
     
     //Update Turn Counter
-    if(curPTurn != 0){
+    if(curPTurn !== 0){
       updatePStoneUI(curTurnLayer);
       curPTurn = 0;
     }
-  };
+  }
   
 /////////////////////////////////////////////////////////////////////////////
 //Foreground Events
@@ -1018,14 +1032,14 @@ var zxGoUI = (function(){
       strokeWidth:   Border,
       fill:          '#888',
       opacity:       0.5,
-      cornerRadius:  20,
+      cornerRadius:  20
     }));
-  };
+  }
 
   function drawScorePage(scorePage){
     //Will eventually create the score page
     scorePage.setOpacity(0.0);
-  };
+  }
 
   function drawSetupPage(newGamePage){
     //Will eventually create the new game page
@@ -1064,16 +1078,16 @@ var zxGoUI = (function(){
 
       font:          font,
       fontSize:      fontSize,
-      text:          "Setup Page",
+      text:          "Setup Page"
     });
 
     temp.setOffset({
-      x:   temp.getWidth()>>1,
+      x:   temp.getWidth()>>1
     });
 
     newGamePage.add(temp);
     
-  };
+  }
 
   function drawPauseScreen(pauseLayer){
     //Builds the initial invisible pause screen
@@ -1101,7 +1115,7 @@ var zxGoUI = (function(){
       
       fontSize:      60,
       font:          'Calibri',
-      text:          'Another game?',
+      text:          'Another game?'
     });
     
     temp.setOffset({
@@ -1121,7 +1135,7 @@ var zxGoUI = (function(){
       
       fontSize:      40,
       font:          'Calibri',
-      text:          'Yes',
+      text:          'Yes'
     });
 
     temp.setOffset({
@@ -1188,7 +1202,7 @@ var zxGoUI = (function(){
     pauseLayer.add(PauseButton);
     pauseLayer.setZIndex(0);
 
-  };
+  }
 
   function loadPauseScreen(){
     //Fades in the pause screen page, or instantly draws it
@@ -1212,12 +1226,12 @@ var zxGoUI = (function(){
       pausePage.setOpacity(1.0);
       pausePage.draw();
     }
-  };
+  }
 
   function afterFadePauseScreen(){
     //Extra event after the "exiting" animation for the pause
     cleaningGame();
-  };
+  }
 
 /////////////////////////////////////////////////////////////////////////////
 //Background Events
@@ -1235,7 +1249,7 @@ var zxGoUI = (function(){
     }, devNullLayer);
 
     clock.start();
-  };
+  }
 
 ///////////////////////////////////////////////////////////////////////////// 
 //"Main" Functions
@@ -1253,7 +1267,7 @@ var zxGoUI = (function(){
 
     //Draw the Actual GO Board
     stoneBoard = createBoard(boardOption,100,100);
-  };
+  }
 
   function WriteMsg(localLayer, msg){
     //This is a message function to send messages to the screen
@@ -1264,20 +1278,20 @@ var zxGoUI = (function(){
     context.font      = '18pt Calibri';
     context.fillStyle = 'black';
     context.fillText(msg, 100, 30);
-  };
+  }
   
   function ClearMsg(localLayer){
     //This clears the message
     
     var context = localLayer.getContext();
     localLayer.clear();
-  };
+  }
 
   function startAfterFade(){
     //After the fade-in animation is completed what do we do
     cursorLayer.setOpacity(1.0);
     drawPauseScreen(pausePage);
-  };
+  }
 
 ///////////////////////////////////////////////////////////////////////////// 
 //Extern Functions
@@ -1291,7 +1305,7 @@ var zxGoUI = (function(){
     context.font      = '18pt Calibri';
     context.fillStyle = 'black';
     context.fillText(msg, 100, 30);
-  };
+  }
 
   function externCreateBoard(div, MODE){
     //Creates the new board, NOT TESTED
@@ -1300,7 +1314,7 @@ var zxGoUI = (function(){
     brdLayer.draw();
     stoneBoard = createBoard({'brdLayer':brdLayer, 'addx':0, 'addy':0, 'div':div}
       , 100,100);
-  };
+  }
 
   function externStartUI(boardOption){
     //Check for mobile and resize as needed
@@ -1367,7 +1381,7 @@ var zxGoUI = (function(){
      else
        startAfterFade();
     
-  };
+  }
 
 ///////////////////////////////////////////////////////////////////////////// 
 //Extern Wrapper Call
@@ -1381,7 +1395,7 @@ var zxGoUI = (function(){
     //Filters div count and mode
     if(div > 4){
       if(div < 24){
-        if(MODE == undefined)
+        if(MODE === undefined)
           externCreateBoard(div , 1);
         else
           externCreateBoard(div , MODE);
@@ -1395,9 +1409,9 @@ var zxGoUI = (function(){
 
   this.StartUI = function(div, MODE){
     //Filters div count and mode
-    if(div  == undefined || div < 4 || div > 24)
+    if(div  === undefined || div < 4 || div > 24)
       div  = 8;
-    if(MODE == undefined)
+    if(MODE === undefined)
       MODE = 3;
 
     //Starts up our UI
