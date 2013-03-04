@@ -1,4 +1,3 @@
-
 # GO JS #
 
 This code project has two pieces a visual front that is created using
@@ -77,6 +76,8 @@ to another
 * Firefox 17.0 works
 
 # Version/Changelog #
+
+* Simplified vars into one line and main.js is executed in a function
 
 #### 0.7.2.0 [02-27-2013] # 
 

@@ -22,10 +22,9 @@
         x += radius;
         y += radius;
      
-        var bendY = 240;
-        
-        var arc_end = Math.sin(Math.PI/4);
-        var arc_mid = Math.tan(Math.PI/8);
+        var bendY = 240,
+            arc_end = Math.sin(Math.PI/4),
+            arc_mid = Math.tan(Math.PI/8);
 
         function drawYinYangShape(x, y, radius){
 
@@ -81,8 +80,9 @@
           strokeWidth: 2
         });
 
-        var angularSpeed = Math.PI / 2;
-        var clickCount = 0;
+        var angularSpeed = Math.PI / 2,
+            clickCount = 0;
+
         var anim = new Kinetic.Animation(function(frame){
             var angleDiff = clickCount*frame.timeDiff*angularSpeed /1000;
             circle.rotate(angleDiff);
