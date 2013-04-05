@@ -7,6 +7,6 @@ function isMobile(){
   // remember str.test is case sensitive
   var _isMobile = (/iphone|ipod|android|ie|blackberry|fennec/).
     test(navigator.userAgent.toLowerCase());
-  //return false;
-  return _isMobile;
+  return false;
+  //return _isMobile;
 }

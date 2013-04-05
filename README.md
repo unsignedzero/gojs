@@ -1,4 +1,3 @@
-
 # GO JS #
 
 This code project has two pieces a visual front that is created using
@@ -59,9 +58,11 @@ to another
 ##### Chrome #
 * Chrome 20.0.1132.57 works
 * Chrome 24.0.1312.52 works
+* Chrome 26.0.2.0 works
 
 ##### Firefox #
 * Firefox 18.0.1 works
+* Firefox 19.0.1.0 works
 
 ##### Firefox #
 * Opera 12.0.2 works
@@ -77,6 +78,14 @@ to another
 * Firefox 17.0 works
 
 # Version/Changelog #
+
+#### 0.7.3.0 [04-05-2013] #
+
+* Updated comment in go_engine.js
+* Removed jquery library, used in only one place with extend function
+* Updated code to work with KineticJS 4.4.0
+  Most common bug is this.stop() which doesn't reference the right object
+* Simplified vars into one line and main.js is executed in a function
 
 #### 0.7.2.0 [02-27-2013] # 
 
