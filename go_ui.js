@@ -1,7 +1,7 @@
 /*Created by David Tran (unsignedzero)
  *on 1-3-2013
- *Version 0.7.2.0
- *Last modified 03-03-2013
+ *Version 0.7.3.0
+ *Last modified 04-05-2013
  *This code draws an interactive GO board on the screen
  *allowing two users to play the game
  */
@@ -49,7 +49,9 @@ var zxGoUI = (function(){
       clock,
 
   //Animation Values
-      captureFade = 500;
+      captureFade = 500,
+  //Shrike Animation
+      shrinkAnim;
 
   var stage = new Kinetic.Stage({
     container: 'container',
@@ -64,16 +66,16 @@ var zxGoUI = (function(){
       cursorLayer  = new Kinetic.Layer(),
       brdLayer     = new Kinetic.Layer(),
       msgLayer     = new Kinetic.Layer({
-    listening: false
+        listening: false
   }),
       UILayer      = new Kinetic.Layer(),
       fadeLayer    = new Kinetic.Layer({
-    listening: false
+        listening: false
   }),
       curTurnLayer = new Kinetic.Layer(),
 
       devNullLayer = new Kinetic.Layer({
-    listening: false
+        listening: false
   });
   
 /////////////////////////////////////////////////////////////////////////////
@@ -234,6 +236,7 @@ var zxGoUI = (function(){
 
       border = div >= 12 ? 3 : 2;
       delta = div - (border<<1);
+
       for(i = 0 ; i <= 1 ; i++){
         for(j = 0 ; j <= 1 ; j++)
           localLayer.add(new Kinetic.Circle({
@@ -390,20 +393,12 @@ var zxGoUI = (function(){
       i += 1;
     }
     
-    /*
-    i = 0;
-    while(i < max){
-      stoneBoard[deadPieces[i]].setOpacity(0.0);
-      i += 1;
-    }
-    */
-
     brdLayer.draw();
 
     anim = new Kinetic.Animation(function(frame) {
       fadeLayer.setOpacity(1 - (frame.time/captureFade));
       if(frame.time >= captureFade){
-        this.stop();
+        anim.stop();
         frame.time = 0;
         fadeLayer.setOpacity(0.0);
         fadeLayer.removeChildren();
@@ -496,7 +491,7 @@ var zxGoUI = (function(){
       anim = new Kinetic.Animation(function(frame) {
         fadeLayer.setOpacity(frame.time/captureFade);
         if(frame.time >= captureFade){
-          this.stop();
+          anim.stop();
           frame.time = 0;
           fadeLayer.setOpacity(1.0);
         }
@@ -539,7 +534,7 @@ var zxGoUI = (function(){
     if(ANIM){
       cursorAnim = new Kinetic.Animation(function(frame){
         if(frame.time > 0){
-          this.stop();
+          anim.stop();
           frame.time = 0;
         }
       }, cursorLayer);
@@ -580,7 +575,7 @@ var zxGoUI = (function(){
         if(frame.time >= 1000){
           cursorAnim.stop();
           frame.time = 0;
-          this.stop();
+          cursorAnim.stop();
           cursor.setX(localX);
           cursor.setY(localy);
         }
@@ -596,6 +591,14 @@ var zxGoUI = (function(){
   }
 
 /////////////////////////////////////////////////////////////////////////////
+//Update State Column
+  function updateColumnUI(){
+    //Updates the canvas, as needed then starts the animation
+    if ( !shrinkAnim.fade )
+      stage.setWidth(800);
+    shrinkAnim.start();
+  }
+
 //Code to create and update the extra UI
   function drawPStoneUI(curTurnLayer){
   /////Draw Upper Left UI Element (player counter)
@@ -634,22 +637,24 @@ var zxGoUI = (function(){
 
     curPStoneAnim = new Kinetic.Animation(function(frame) {
       //Creates the "flip" animation for the stone piece
-      scale = Math.cos((frame.time<<1) * Math.PI /2000)  + 0.001;
+      scale = Math.cos((frame.time*2) * Math.PI /2000);
 
       curPStonePiece.setScale(1,scale);
       if(frame.time >1000){
         frame.time = 0;
-        this.half = false;
-        this.stop();
+        curPStonePiece.setScale(1,1);
+        curPStoneAnim.half = false;
+        curPStoneAnim.stop();
       }
       else if(frame.time > 500){
         if(curPStoneAnim.half === false){
+          curPStoneAnim.half = true;
           curPStonePiece.setFill(curPStonePiece.getFill() === 'white' ? 'black' : 'white'); 
-          this.half = true;
         }
       }
     }, curTurnLayer);
 
+    curPStoneAnim.half = false;
     curPStoneAnim.half = false;
     
     curPStonePiece.hasPassed = false;
@@ -660,21 +665,20 @@ var zxGoUI = (function(){
     curPStonePiece.on('mousedown tap', function(){
       //Case A we use animation to make it work
       if(ANIM){
-        var shrinkAnim = new Kinetic.Animation(function(frame) {
+        shrinkAnim = new Kinetic.Animation(function(frame) {
           if(shrinkAnim.fade){
             UILayer.setOpacity(1 - (frame.time/200));
             if(frame.time >= 200){
-              this.stop();
+              shrinkAnim.stop();
               stage.setWidth(626);
               frame.time = 0;
               shrinkAnim.fade = false;
             }
           }
           else{
-            stage.setWidth(800);
             UILayer.setOpacity(frame.time/200);
             if(frame.time >= 200){
-              this.stop();
+              shrinkAnim.stop();
               frame.time = 0;
               shrinkAnim.fade = true;
             }
@@ -683,7 +687,7 @@ var zxGoUI = (function(){
    
         shrinkAnim.fade = stage.getWidth() < 630 ? false : true;
 
-        shrinkAnim.start();
+        updateColumnUI();
       }
       //Case B no ANIM
       else{
@@ -982,7 +986,7 @@ var zxGoUI = (function(){
       boardAnim = new Kinetic.Animation(function(frame){
         fadeLayer.setOpacity(1 - (frame.time/2000));
         if(frame.time>= 2000){
-          this.stop();
+          boardAnim.stop();
           frame.time = 0;
           fadeLayer.setOpacity(0.0);
           fadeLayer.removeChildren();
@@ -1004,7 +1008,7 @@ var zxGoUI = (function(){
     ClearMsg(msgLayer);
     
     //Reset Stats
-    updateStats([0,0,0,0]);
+    updateStats(backendGOBoard.stoneCount());
     
     //Update Turn Counter
     if(curPTurn !== 0){
@@ -1170,15 +1174,19 @@ var zxGoUI = (function(){
     PauseButton.on('mousedown tap', function(){
       if(ANIM && !PauseButton.inAnim){
         PauseButton.inAnim = true;
-        (new Kinetic.Animation(function(frame){
-          pauseLayer.setOpacity(1 - (frame.time/2000));
-          if(frame.time>= 2000){
-            pauseLayer.setZIndex(0);
-            this.stop();
-            pauseLayer.setOpacity(0.0);
-            afterFadePauseScreen();
-          }
-        },pauseLayer)).start();
+        (function (){
+          var ptr;
+          ptr = new Kinetic.Animation(function(frame){
+            pauseLayer.setOpacity(1 - (frame.time/2000));
+            if(frame.time>= 2000){
+              pauseLayer.setZIndex(0);
+              ptr.stop();
+              pauseLayer.setOpacity(0.0);
+              afterFadePauseScreen();
+            }
+          },pauseLayer);
+          ptr.start();
+        })();
       }
       else if(!ANIM) {
         pauseLayer.setZIndex(0);
@@ -1202,15 +1210,18 @@ var zxGoUI = (function(){
     pausePage.setOpacity(0.0);
     
     if(ANIM){
-      (new Kinetic.Animation(function(frame){
-        pausePage.setOpacity(frame.time/2000);
-        if(frame.time>= 2000){
-          this.stop();
-          pausePage.setOpacity(1.0);
-          frame.time = 0;
-          PauseButton.inAnim = false;
-        }
-      },pausePage)).start();
+      (function (){
+        var ptr = new Kinetic.Animation(function(frame){
+          pausePage.setOpacity(frame.time/2000);
+          if(frame.time>= 2000){
+            ptr.stop();
+            pausePage.setOpacity(1.0);
+            frame.time = 0;
+            PauseButton.inAnim = false;
+          }
+        },pausePage);
+       ptr.start();
+     })();
     }
     else{
       pausePage.setOpacity(1.0);
@@ -1308,7 +1319,7 @@ var zxGoUI = (function(){
 
   function externStartUI(boardOption){
     //Check for mobile and resize as needed
-    var addx, addy;
+    var addx, addy, temp;
 
     if(BIG){
       addx = 1500;
@@ -1323,11 +1334,11 @@ var zxGoUI = (function(){
     }
 
     //Add to our board option
-    boardOption['addx']         = addx;
-    boardOption['addy']         = addy;
-    boardOption['brdLayer']     = brdLayer;
-    boardOption['UILayer']      = UILayer;
-    boardOption['curTurnLayer'] = curTurnLayer;
+    boardOption.addx         = addx;
+    boardOption,addy         = addy;
+    boardOption.brdLayer     = brdLayer;
+    boardOption.UILayer      = UILayer;
+    boardOption.curTurnLayer = curTurnLayer;
 
     //Add our full UI
     drawUI(boardOption);
@@ -1346,6 +1357,7 @@ var zxGoUI = (function(){
     stage.add(scorePage);
 
     stage.add(msgLayer);
+
     if(!BIG)
       stage.add(UILayer);
     
@@ -1356,17 +1368,20 @@ var zxGoUI = (function(){
     if(!BIG)
       stage.add(curTurnLayer);
 
-    
     if(ANIM){
       stage.setOpacity(0.0);
-      (new Kinetic.Animation(function(frame) {
-         stage.setOpacity((frame.time/1000));
-         if(frame.time >= 1000){
-           stage.setOpacity(1.0);
-           this.stop();
-           startAfterFade();
-         }
-       }, stage)).start();
+      (function (){
+        var ptr = new Kinetic.Animation(function(frame) {
+           stage.setOpacity((frame.time/1000));
+           if(frame.time >= 1000){
+             stage.setOpacity(1.0);
+             ptr.stop();
+             startAfterFade();
+           }
+         }, stage);
+         ptr.start();
+       })();
+      
      }
      else
        startAfterFade();

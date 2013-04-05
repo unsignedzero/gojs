@@ -1,12 +1,13 @@
 ﻿/*Go board Engine
  *Created by David Tran
  *on 1-3-2013
- *Version 0.7.2.0
- *Last modified 03-03-2013
+ *Version 0.7.3.0
+ *Last modified 04-05-2013
  */
 
-//Board Class
-
+//This generates the board class object that is used in the go_ui
+//This code checks the logic of a remove and recalculates the new
+//board, if the given move is valid
 
 zxGoBoard = function(size, BoardMODE) {
 
@@ -122,13 +123,19 @@ zxGoBoard = function(size, BoardMODE) {
       i += 1;
     }
     return newBoard;
-    //return $.extend(true,[],Board);
   }
 
   function cloneStoneCount(){
     //Returns a deep copy of the StoneCount
+    var newStoneCount = [], MAX = StoneCount.length;
 
-    return $.extend(true,[],StoneCount);
+    i = 0;
+    while(i < MAX){
+      newStoneCount.push(StoneCount[i]);
+      i += 1;
+    }
+
+    return newStoneCount;
   }
 
   function resizeBoard(size){

@@ -1,7 +1,7 @@
 ﻿/*Created by David Tran (unsignedzero)
  *on 1-13-2013
- *Version 0.7.2.0
- *Last modified 02-27-2013
+ *Version 0.7.3.0
+ *Last modified 04-05-2013
  *This code creates the interactive go Title
  */
 
@@ -81,7 +81,7 @@ zxGoTitle = function(canvasName, width, height){
         if ( frame.time >= 2000 ){
           frame.time = 0;
           circle_back.setRotation(circle.getRotation()+Math.PI);
-          this.stop();
+          yinYangStartAnim.stop();
           //CODE for full circle here
 
           //outline.setFill('black');
@@ -101,7 +101,7 @@ zxGoTitle = function(canvasName, width, height){
         if ( frame.time >= 2000 ){
           frame.time = 0;
           circle_back.setRotation(circle.getRotation());
-          this.stop();
+          yinYangEndAnim.stop();
           to_end = false;
           }
       },localLayer));
