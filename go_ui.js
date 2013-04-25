@@ -1,7 +1,7 @@
 /*Created by David Tran (unsignedzero)
  *on 1-3-2013
  *Version 0.7.3.0
- *Last modified 04-05-2013
+ *Last modified 04-25-2013
  *This code draws an interactive GO board on the screen
  *allowing two users to play the game
  */
@@ -1015,6 +1015,9 @@ var zxGoUI = (function(){
       updatePStoneUI(curTurnLayer);
       curPTurn = 0;
     }
+
+    //Draw the layer
+    UILayer.draw();
   }
   
 /////////////////////////////////////////////////////////////////////////////
