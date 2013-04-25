@@ -1,4 +1,3 @@
-
 # GO JS #
 
 This code project has two pieces a visual front that is created using
@@ -14,9 +13,8 @@ incomplete demos.
 
 Created by unsignedzero and started on 12-28-2012 as an idea.
 
-# TO DO #
+## TO DO #
 ### GO UI #
-
 * Unpollute General Namespace (DONE)
 * Add gradient to the stones for realism (0%)
 * Add in-game timer (100%)
@@ -45,41 +43,27 @@ Created by unsignedzero and started on 12-28-2012 as an idea.
 * Create non-anim version
 * Mobile test (20%)
 
-## Browser Test #
-* To run this, a browser needs to mainly support JavaScript (KineticJS Library)
-and HTML5
-* For mobile devices they need to be able to zoom/pan from one of the board
-to another
+#### EXTRA #
+* Remove start menu.js?
+* Remove spinners eventually?
 
-#### Desktop/Laptop Browsers tested #
-##### IE #
-* IE 6 NO
-* IE 8 NO
+* * * *
 
-##### Chrome #
-* Chrome 20.0.1132.57 works
-* Chrome 24.0.1312.52 works
+## Version/Changelog #
+* More browsers tested and moved to make README.md shorter
+* Fixed miscellaneous errors such as spacing for README.md
+* Updated UI bug where captured count doesn't reset until first click
 
-##### Firefox #
-* Firefox 18.0.1 works
+* * * *
 
-##### Firefox #
-* Opera 12.0.2 works
-
-##### Safari #
-* Safari 6.0.2 works
-
-#### Mobile Phone/Tablet Browsers tested #
-##### Opera #
-* Opera 12.1.0 works but zoom/pan does not work correctly
-
-##### Firefox
-* Firefox 17.0 works
-
-# Version/Changelog #
+#### 0.7.3.0 [04-05-2013] #
+* Updated comment in go_engine.js
+* Removed jquery library, used in only one place with extend function
+* Updated code to work with KineticJS 4.4.0
+  Most common bug is this.stop() which doesn't reference the right object
+* Simplified vars into one line and main.js is executed in a function
 
 #### 0.7.2.0 [02-27-2013] # 
-
 * Fixed warnings from test on js files
 * Created basic JSLint Test
 * Bugfix, Bad reference name in title page
@@ -89,7 +73,6 @@ to another
 * Added listening false to layers that don't require listening
 
 #### 0.7.1.2 [02-03-2013] #
-
 * Removed commented for loops
 * Bugfix, stone count doesn't update correctly until first move
 * Counting the number of stones left/number of stones captured are seperate
@@ -98,7 +81,6 @@ to another
 * Bugfix, with hash, invalid suicidal moves were allowed
 
 #### 0.7.1.1 [01-24-2013] #
-
 * Cleaned up spinner tests. Unpopulated global namespace
 * Converted fors in key spots to whiles to improve speed
 * Removed the GO\_UI\_ name space in front of variable names
@@ -120,6 +102,8 @@ to another
 * Captured territories now shown as squares, rather than nothing
 * Non-anim version of end game working
 * Bugfix, Readme corrected syntax issue
+
+* * * *
 
 #### 0.6.6.0 [01-18-2013] #
 * Added scope for the UI
@@ -162,12 +146,18 @@ to another
 #### 0.6.0.0 [01-10-2013] #
 * Converted GO Engine from a collection of functions to a class
 
+* * * *
+
 #### 0.5.0.0 [01-09-2013] #
 * Added animation for fading pieces for UI
 * Tested GO Engine Prototype Code ( clicks match with board object )
 
+* * * *
+
 #### 0.4.0.0 [01-09-2013] #
 * UI works without animation. Animation buggy but working
+
+* * * *
 
 #### 0.2.0.0 [01-08-2013] #
 * Debug msg output built into UI
@@ -176,8 +166,12 @@ to another
 * Renamed GO Board methods for easier understanding
 * Removed bad scoring algorithm
 
+* * * *
+
 #### 0.1.0.0 [01-07-2013] #
 * Created prototype GO Engine code (untested)
+
+* * * *
 
 #### 0.0.0.0 [01-07-2013] #
 * Created basic working UI with player stone animation (upper left)
@@ -185,9 +179,10 @@ to another
 * Created placeholder right column
 * Placed board, in now current, position
 
+* * * *
+
 #### Prototype [01-05-2013] #
 * Can draw board of any size, and any grid
 
-# EXTRA #
-* Remove start menu.js?
-* Remove spinners eventually?
+* * * *
+

@@ -2,7 +2,7 @@
  *Created by = David Tran 
  *on 01-11-2013
  *Version 0.7.2.0
- *Last modified 02-27-2013
+ *Last modified 03-03-2013
  */
 
 //////////////////////////////////////////////////////////////////////////////
@@ -15,9 +15,9 @@ var GO_MENU_Stage = new Kinetic.Stage({
   height: 700
 });
 
-var GO_MENU_textLayer  = new Kinetic.Layer();
-var GO_MENU_stoneLayer = new Kinetic.Layer();
-var GO_MENU_backLayer  = new Kinetic.Layer();
+var GO_MENU_textLayer  = new Kinetic.Layer(),
+    GO_MENU_stoneLayer = new Kinetic.Layer(),
+    GO_MENU_backLayer  = new Kinetic.Layer();
 
 function drawBackground( _layer ){
   //Draws the static background for the menu
@@ -67,8 +67,7 @@ function drawText( _layer, _string, _x, _y, _size ){
 }
 
 function createOptions( _layer , _x, _y, _string ){
-  var temp;
-  var _radius = 30;
+  var temp, _radius = 30;
 
   temp = new Kinetic.Circle({
     stroke:      'black',
@@ -120,11 +119,11 @@ function createOptions( _layer , _x, _y, _string ){
 }
 
 function YinYang( _layer ){
-  var temp;
+  var temp, content;
 
   temp = new Kinetic.Shape({
     drawFunc: function(canvas) {
-      var context = canvas.getContext();
+      context = canvas.getContext();
       context.beginPath();
       context.closePath();
       canvas.fillStroke(this);

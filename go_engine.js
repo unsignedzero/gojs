@@ -1,12 +1,13 @@
 ﻿/*Go board Engine
  *Created by David Tran
  *on 1-3-2013
- *Version 0.7.2.0
- *Last modified 02-27-2013
+ *Version 0.7.3.0
+ *Last modified 04-05-2013
  */
 
-//Board Class
-
+//This generates the board class object that is used in the go_ui
+//This code checks the logic of a remove and recalculates the new
+//board, if the given move is valid
 
 zxGoBoard = function(size, BoardMODE) {
 
@@ -14,13 +15,13 @@ zxGoBoard = function(size, BoardMODE) {
 
   //Private Variable Members
   //CONSTSTANTS
-  var BOARD_SIZE    = size;
-  var MAX           = BOARD_SIZE * BOARD_SIZE;
+  var BOARD_SIZE = size,
+  MAX            = BOARD_SIZE * BOARD_SIZE,
 
-  var EMPTY_PIECE   = 0;
-  var NEUTRAL_PIECE = 100;
+  EMPTY_PIECE    = 0,
+  NEUTRAL_PIECE  = 100,
 
-  var MODE = BoardMODE;
+  MODE           = BoardMODE;
   /*0 Free, no rules
    *1 Capture count, captures are accounted for
    *2 KO, KO blocked
@@ -29,16 +30,15 @@ zxGoBoard = function(size, BoardMODE) {
    */
 
   //Local
-  var Board      = [];
-  var History    = [];
-  var BoardHash  = {};
+  var Board     = [],
+      History   = [],
+      BoardHash = {};
 
   //This is the default null values
-  var StoneCount;
+  var i, StoneCount;
   setStoneCount(MODE,StoneCount);
 
   //HELPER VAR
-  var i;
 
   //Possible values of the board
   /*var PLAYER_MAP = {
@@ -78,8 +78,8 @@ zxGoBoard = function(size, BoardMODE) {
     return x+BOARD_SIZE < MAX ? x+BOARD_SIZE : -1;
   }
 
-  var direction      = [left,right,up,down];
-  var directionCount = direction.length;
+  var direction      = [left,right,up,down],
+      directionCount = direction.length;
 
   //Assist Functions for debugging
   //Converts the 1d <-> 2d coords
@@ -115,21 +115,27 @@ zxGoBoard = function(size, BoardMODE) {
 
   function cloneBoard(){
     //Returns a deep copy of the board
-
     var newBoard = [];
+
     i = 0;
     while(i < MAX){
       newBoard.push(Board[i]);
       i += 1;
     }
     return newBoard;
-    //return $.extend(true,[],Board);
   }
 
   function cloneStoneCount(){
     //Returns a deep copy of the StoneCount
+    var newStoneCount = [], MAX = StoneCount.length;
 
-    return $.extend(true,[],StoneCount);
+    i = 0;
+    while(i < MAX){
+      newStoneCount.push(StoneCount[i]);
+      i += 1;
+    }
+
+    return newStoneCount;
   }
 
   function resizeBoard(size){
@@ -187,9 +193,8 @@ zxGoBoard = function(size, BoardMODE) {
      *https://en.wikipedia.org/wiki/Flood_fill
      */
 
-    var queue = [];
-    var count =  0;
-    var i;
+    var i, queue = [],
+        count =  0;
 
     queue.push(pos);
 
@@ -236,9 +241,8 @@ zxGoBoard = function(size, BoardMODE) {
      *https://en.wikipedia.org/wiki/Flood_fill
      */
 
-    var local_board = cloneBoard();
-    var queue = [];
-    var i,j;
+    var i, j, local_board = cloneBoard(),
+        queue = [];
 
     queue.push(pos);
 
@@ -272,9 +276,9 @@ zxGoBoard = function(size, BoardMODE) {
      *to calculate territory
      */
 
-    var P1Score, P2Score, hasP1, hasP2, P1STONE, P2STONE;
-    var i, j, k, blanksLeft, piecesToColor, roundPieceLeft;
-    var lastblanksLeft;
+    var P1Score, P2Score, hasP1, hasP2, P1STONE, P2STONE,
+        i, j, k, blanksLeft, piecesToColor, roundPieceLeft,
+        lastblanksLeft;
 
     P1STONE = 1;
     P2STONE = 2;
@@ -282,10 +286,10 @@ zxGoBoard = function(size, BoardMODE) {
     P1Score = 0;
     P2Score = 0;
 
-    var emptySpot      = [];
-    var newEmptySpot   = [];
-    var updateSpot     = [];
-    var updateColor    = [];
+    var emptySpot = [],
+    newEmptySpot  = [],
+    updateSpot    = [],
+    updateColor   = [];
 
     //Find all empty spots and add it
     i = 0;
@@ -387,9 +391,8 @@ zxGoBoard = function(size, BoardMODE) {
   this.draw = function(){
     //Draws to the console via alert
 
-    var i;
-    var mid    = cloneBoard();
-    var output = [];
+    var i, mid = cloneBoard(),
+        output = [];
 
     i = 0;
     while(i < BOARD){
@@ -425,10 +428,10 @@ zxGoBoard = function(size, BoardMODE) {
     //Checks if pos is a valid move
     //If so returns true else false
 
-    var i, j, hash_val, isValid, newBoard;
-    var colorPiece = color - 1;
-    var enemyColor = color === 2 ? 1 : 2;
-    var stoneCapture = 0;
+    var i, j, hash_val, isValid, newBoard,
+        colorPiece = color - 1,
+        enemyColor = color === 2 ? 1 : 2,
+        stoneCapture = 0;
 
     //Invalid position
     if (pos < 0 || pos >= MAX)
@@ -506,8 +509,8 @@ zxGoBoard = function(size, BoardMODE) {
 
   this.endGame = function (){
     //Ends the game and calculates score
-    var output = endGameCalc();
-    var a = cloneBoard();
+    var output = endGameCalc(),
+        a = cloneBoard();
 
     clearBoard();
     return [output,a];
