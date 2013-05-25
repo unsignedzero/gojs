@@ -30,7 +30,7 @@ Created by unsignedzero and started on 12-28-2012 as an idea.
 ### GO Engine #
 * Account for Kos (100%)
 * Add end game checker and scoring (DONE)
-* Allow for prisoner exchanges (0%)
+* Allow for prisoner exchanges (100%)
 * Allows resizing board (50%)
 * Modify check return so UI gets more data back (0%)
 
@@ -55,6 +55,8 @@ Created by unsignedzero and started on 12-28-2012 as an idea.
 * Updated UI bug where captured count doesn't reset until first click
 
 * * * *
+
+* Added function in Go engine to exchange prisoners
 
 #### 0.7.3.0 [04-05-2013] #
 * Updated comment in go_engine.js

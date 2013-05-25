@@ -113,6 +113,7 @@ zxGoBoard = function(size, BoardMODE) {
   /***************************************************************************/
   /////Main Functions
 
+  //Clone the arrays for output
   function cloneBoard(){
     //Returns a deep copy of the board
     var newBoard = [];
@@ -153,7 +154,6 @@ zxGoBoard = function(size, BoardMODE) {
     }
 
     clearSupport();
-
   }
 
   function clearBoard(){
@@ -176,7 +176,6 @@ zxGoBoard = function(size, BoardMODE) {
       BoardHash  = {};
     if (MODE&4)
      History     = [];
-
   }
 
   function canRemoveStones(pos){
@@ -384,12 +383,42 @@ zxGoBoard = function(size, BoardMODE) {
     return [ P1Score , P2Score ];
   }
 
+  function prisonerExchange(maxValue){
+    /* We exchange up to maxValue prisoners
+     * If maxValue is set to be 0, we can see the max amount we can change
+     * but we won't exchange it.
+     * Settings maxValue to be < 0 or undefined/null 
+     * WILL exchange the max amount.
+     */
+     var maxPossible = StoneCount[2] < StoneCount[3] ? StoneCount[2] : 
+                      StoneCount[3];
+
+     if ( maxValue === 0 ){
+       return maxPossible;
+     }
+     else if ( maxValue === undefined || maxValue === null ||
+               maxValue < 0 || maxValue > maxPossible ){
+       maxValue = maxPossible;
+     }
+
+     if ( MODE&8 ){
+       StoneCount[0] += maxValue;
+       StoneCount[1] += maxValue;
+     }
+
+     StoneCount[2] -= maxValue;
+     StoneCount[3] -= maxValue;
+
+     return maxValue;
+  }
+
   /***************************************************************************/
   /////Privileged Members
 
   //DEBUGGING FUNCTION
   this.draw = function(){
     //Draws to the console via alert
+    //For the 2d array grab the curState.
 
     var i, mid = cloneBoard(),
         output = [];
@@ -514,6 +543,10 @@ zxGoBoard = function(size, BoardMODE) {
 
     clearBoard();
     return [output,a];
+  };
+
+  this.prisonerEx = function(maxValue){
+    return prisonerExchange(maxValue);
   };
 
 };
