@@ -1,4 +1,4 @@
-# GO JS #
+# GO JS [![Build status:Can't load apt.travis-ci.org](https://api.travis-ci.org/unsignedzero/gojs.png?branch=travis)](https://travis-ci.org/unsignedzero/gojs)
 
 This code project has two pieces a visual front that is created using
 mainly kineticJS and a backend which uses some jQuery. Each end can be used
@@ -53,7 +53,9 @@ Created by unsignedzero and started on 12-28-2012 as an idea.
 
 * * * *
 
-* Creating work package.json files
+* Created sample test file. Fixed author naming issue from NAMEREGEX to David
+  Tran by rebasing and now cherry-picking to the right branch.
+* Created work package.json files to prepare for travis-ci.
 * Updating development branch to 0.7.3.1
 
 #### 0.7.3.1 [09-27-2013] #
