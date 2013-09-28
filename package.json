@@ -1,0 +1,10 @@
+{
+  "name": "gojs",
+  "version": "0.7.3",
+  "description": "A simple gojs game built with HTML 5 canvas",
+  "repository": "",
+  "author": "unsignedzero",
+  "devDependencies": {
+      "grunt": "~0.4.1"
+  }
+}

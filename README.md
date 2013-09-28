@@ -53,6 +53,7 @@ Created by unsignedzero and started on 12-28-2012 as an idea.
 
 * * * *
 
+* Creating work package.json files
 * Updating development branch to 0.7.3.1
 
 #### 0.7.3.1 [09-27-2013] #
