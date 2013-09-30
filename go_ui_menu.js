@@ -1,5 +1,5 @@
 /*Go board
- *Created by = David Tran 
+ *Created by = David Tran
  *on 01-11-2013
  *Version 0.7.2.0
  *Last modified 03-03-2013
@@ -21,19 +21,19 @@ var GO_MENU_textLayer  = new Kinetic.Layer(),
 
 function drawBackground( _layer ){
   //Draws the static background for the menu
-  
+
   //Draw Static Box
   _layer.add( new Kinetic.Rect({
     x:           50,
     y:           50,
     width:       GO_MENU_Stage.getWidth()  - 100,
     height:      GO_MENU_Stage.getHeight() - 100,
-    
+
     stroke:      'black',
     strokeWidth: 2,
     //fill:        'grey',
     cornerRadius: 50,
-    
+
     fillLinearGradientStartPoint: [ GO_MENU_Stage.getWidth(),  GO_MENU_Stage.getHeight()],
     fillLinearGradientEndPoint:   [-GO_MENU_Stage.getWidth(), -GO_MENU_Stage.getHeight()],
     fillLinearGradientColorStops: [0.0, '#333', 0.5, '#BBB']
@@ -48,7 +48,7 @@ function drawText( _layer, _string, _x, _y, _size ){
   var temp;
   temp = new Kinetic.Text({
     x:             _x,
-    y:             _y, 
+    y:             _y,
     text:          _string,
     fontSize:      _size,
     fontFamily:    'Calibri',
@@ -93,7 +93,7 @@ function createOptions( _layer , _x, _y, _string ){
     this.setFill('white');
     _layer.draw();
   });
-  
+
   temp.on( 'mouseout' , function(){
     this.setFill('white');
     _layer.draw();
@@ -103,7 +103,7 @@ function createOptions( _layer , _x, _y, _string ){
 
   temp = new Kinetic.Text({
     x:             _x + 50,
-    y:             _y - (_radius>>1), 
+    y:             _y - (_radius>>1),
     text:          _string,
     fontSize:      30,
     fontFamily:    'Calibri',
@@ -113,7 +113,7 @@ function createOptions( _layer , _x, _y, _string ){
 
     fill:          'white'
   });
- 
+
   _layer.add(temp);
 
 }
@@ -136,7 +136,7 @@ function YinYang( _layer ){
 }
 
 function externStartMenu(){
-  
+
   //Adds and starts our menu
   drawBackground(GO_MENU_backLayer);
   drawText(GO_MENU_backLayer,"----GO----",400,80,40);

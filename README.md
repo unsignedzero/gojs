@@ -50,28 +50,34 @@ Created by unsignedzero and started on 12-28-2012 as an idea.
 * * * *
 
 ## Version/Changelog #
-* More browsers tested and moved to make README.md shorter
-* Fixed miscellaneous errors such as spacing for README.md
-* Updated UI bug where captured count doesn't reset until first click
 
 * * * *
 
+* Updating development branch to 0.7.3.1
+
+#### 0.7.3.1 [09-27-2013] #
+* Removed extra spaces at end of line.
+* Added space before one line comments and make commenting consistent.
+* Fixed README with unescaped underscores.
+* More browsers tested and moved to make README.md shorter
+* Fixed miscellaneous errors such as spacing for README.md
+* Updated UI bug where captured count doesn't reset until first click
 * Added function in Go engine to exchange prisoners
 
 #### 0.7.3.0 [04-05-2013] #
-* Updated comment in go_engine.js
+* Updated comment in go\_engine.js
 * Removed jquery library, used in only one place with extend function
 * Updated code to work with KineticJS 4.4.0
   Most common bug is this.stop() which doesn't reference the right object
 * Simplified vars into one line and main.js is executed in a function
 
-#### 0.7.2.0 [02-27-2013] # 
+#### 0.7.2.0 [02-27-2013] #
 * Fixed warnings from test on js files
 * Created basic JSLint Test
 * Bugfix, Bad reference name in title page
 * Renamed files to reflect their new usage
 * Created basic generic class for title page
-* Cleaned up extra spaces on go_ui and go_engine.js code
+* Cleaned up extra spaces on go\_ui and go\_engine.js code
 * Added listening false to layers that don't require listening
 
 #### 0.7.1.2 [02-03-2013] #
@@ -93,7 +99,7 @@ Created by unsignedzero and started on 12-28-2012 as an idea.
 * History Added (not used yet)
 * KO Support Added
 * Spinner tests work on mobile devices now
-* Mobile support fixed and working. 
+* Mobile support fixed and working.
 * Added outline for mobile support
 * Fixed Permissions so it works on all unix boxes
 
@@ -122,7 +128,7 @@ Created by unsignedzero and started on 12-28-2012 as an idea.
 * Bugfix, Fixed stone resizing so that they don't overlap with the right-column UI when they are too large
 
 #### 0.6.4.1 [01-15-2013] #
-* Bugfix, Fixed stone resizing so that it resizing when the grid (in-game board) changes size 
+* Bugfix, Fixed stone resizing so that it resizing when the grid (in-game board) changes size
 * Bugfix, Changed EOF to UNIX
 * Readme Updated. To-do list added and basic abstract added
 
@@ -164,7 +170,7 @@ Created by unsignedzero and started on 12-28-2012 as an idea.
 #### 0.2.0.0 [01-08-2013] #
 * Debug msg output built into UI
 * Created, but not tested, UI code
-* All UI references start with GO UI 
+* All UI references start with GO UI
 * Renamed GO Board methods for easier understanding
 * Removed bad scoring algorithm
 
