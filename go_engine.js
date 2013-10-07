@@ -1,8 +1,8 @@
 ﻿/*Go board Engine
  *Created by David Tran
  *on 01-03-2013
- *Version 0.7.3.1
- *Last modified 09-27-2013
+ *Version 0.8.0.0
+ *Last modified 10-07-2013
  */
 
 // This generates the board class "object" that is used in the go_ui
@@ -401,10 +401,10 @@ zxGoBoard = function(size, BoardMODE) {
     /* We exchange up to maxValue prisoners
      * If maxValue is set to be 0, we can see the max amount we can change
      * but we won't exchange it.
-     * Settings maxValue to be < 0 or undefined/null 
+     * Settings maxValue to be < 0 or undefined/null
      * WILL exchange the max amount.
      */
-     var maxPossible = StoneCount[2] < StoneCount[3] ? StoneCount[2] : 
+     var maxPossible = StoneCount[2] < StoneCount[3] ? StoneCount[2] :
                       StoneCount[3];
 
      if ( maxValue === 0 ){
@@ -576,3 +576,8 @@ zxGoBoard.prototype = {
   //},
 
 };
+
+// Read it in nodejs
+if (typeof exports !== 'undefined')
+  exports.zxGoBoard = zxGoBoard;
+

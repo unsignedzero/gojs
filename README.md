@@ -53,6 +53,8 @@ Created by unsignedzero and started on 12-28-2012 as an idea.
 
 * * * *
 
+#### 0.8.0.0 [10-07-2013] #
+* Jasmine-node test samples created and working
 * Created sample test file. Fixed author naming issue from NAMEREGEX to David
   Tran by rebasing and now cherry-picking to the right branch.
 * Created work package.json files to prepare for travis-ci.
