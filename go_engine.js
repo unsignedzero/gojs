@@ -1,8 +1,8 @@
 ﻿/*Go board Engine
  *Created by David Tran
  *on 01-03-2013
- *Version 0.7.3.1
- *Last modified 09-27-2013
+ *Version 0.8.1.0
+ *Last modified 10-07-2013
  */
 
 // This generates the board class "object" that is used in the go_ui
@@ -37,7 +37,7 @@ zxGoBoard = function(size, BoardMODE) {
 
   // This is the default null values
   var i, StoneCount;
-  setStoneCount(MODE,StoneCount);
+  setStoneCount(MODE, StoneCount);
 
   // HELPER VAR
 
@@ -79,7 +79,7 @@ zxGoBoard = function(size, BoardMODE) {
   }
 
   // They are collected in an array to easier use.
-  var direction      = [left,right,up,down],
+  var direction      = [left, right, up, down],
       directionCount = direction.length;
 
   // Assist Functions for debugging
@@ -118,6 +118,7 @@ zxGoBoard = function(size, BoardMODE) {
   /***************************************************************************/
   ///// Main Functions
 
+  //Clone the arrays for output
   function cloneBoard(){
     // Returns a deep copy of the board
 
@@ -178,13 +179,12 @@ zxGoBoard = function(size, BoardMODE) {
 
     // Cleans up the board's extra data
 
-    setStoneCount(MODE,StoneCount);
+    setStoneCount(MODE, StoneCount);
 
     if (MODE&2)
       BoardHash  = {};
     if (MODE&4)
      History     = [];
-
   }
 
   function canRemoveStones(pos){
@@ -192,7 +192,7 @@ zxGoBoard = function(size, BoardMODE) {
 
     if (pos < 0 || pos >= MAX)
       return -1;
-    return stoneRemover(Board[pos],pos);
+    return stoneRemover(Board[pos], pos);
   }
 
   function stoneRemover(color, pos){
@@ -241,7 +241,7 @@ zxGoBoard = function(size, BoardMODE) {
 
     if (pos < 0 || pos >= MAX)
       return false;
-    return libertyCheck(Board[pos],pos);
+    return libertyCheck(Board[pos], pos);
   }
 
   function libertyCheck (color, pos){
@@ -397,19 +397,49 @@ zxGoBoard = function(size, BoardMODE) {
     return [ P1Score , P2Score ];
   }
 
+  function prisonerExchange(maxValue){
+    /* We exchange up to maxValue prisoners
+     * If maxValue is set to be 0, we can see the max amount we can change
+     * but we won't exchange it.
+     * Settings maxValue to be < 0 or undefined/null
+     * WILL exchange the max amount.
+     */
+     var maxPossible = StoneCount[2] < StoneCount[3] ? StoneCount[2] :
+                      StoneCount[3];
+
+     if ( maxValue === 0 ){
+       return maxPossible;
+     }
+     else if ( maxValue === undefined || maxValue === null ||
+               maxValue < 0 || maxValue > maxPossible ){
+       maxValue = maxPossible;
+     }
+
+     if ( MODE&8 ){
+       StoneCount[0] += maxValue;
+       StoneCount[1] += maxValue;
+     }
+
+     StoneCount[2] -= maxValue;
+     StoneCount[3] -= maxValue;
+
+     return maxValue;
+  }
+
   /***************************************************************************/
   ///// Privileged Members
 
   // DEBUGGING FUNCTION
   this.draw = function(){
     // Draws to the console via alert
+    // For the 2d array it grabs the curState.
 
     var i, mid = cloneBoard(),
         output = [];
 
     i = 0;
     while(i < BOARD){
-      output.push(mid.slice(i,BOARD_SIZE+i).join(""));
+      output.push(mid.slice(i, BOARD_SIZE+i).join(""));
       i += 1;
     }
 
@@ -513,7 +543,7 @@ zxGoBoard = function(size, BoardMODE) {
 
       // Update History
       if (MODE&4)
-        History.push([pos,color]);
+        History.push([pos, color]);
 
       // Update Stone Count
       if (MODE&8)
@@ -530,7 +560,11 @@ zxGoBoard = function(size, BoardMODE) {
         a = cloneBoard();
 
     clearBoard();
-    return [output,a];
+    return [output, a];
+  };
+
+  this.prisonerEx = function(maxValue){
+    return prisonerExchange(maxValue);
   };
 
 };
@@ -542,3 +576,8 @@ zxGoBoard.prototype = {
   //},
 
 };
+
+// Read it in nodejs
+if (typeof exports !== 'undefined')
+  exports.zxGoBoard = zxGoBoard;
+

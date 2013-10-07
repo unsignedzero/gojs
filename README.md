@@ -1,7 +1,7 @@
-# GO JS #
+# GO JS [![Build status:Can't load apt.travis-ci.org](https://api.travis-ci.org/unsignedzero/gojs.png?branch=travis)](https://travis-ci.org/unsignedzero/gojs)
 
-This code project has two pieces a visual front that is created using
-mainly kineticJS and a backend which uses some jQuery. Each end can be used
+This code project has two pieces, a visual front that is created using
+mainly kineticJS and a logic backend. Each end can be used
 independently. Together, they allow the user to play Go, currently with
 someone else at the same machine. As this is currently a WIP, not all features
 that one would except in a GO game are implemented. Please see the TODO List below
@@ -30,7 +30,7 @@ Created by unsignedzero and started on 12-28-2012 as an idea.
 ### GO Engine #
 * Account for Kos (100%)
 * Add end game checker and scoring (DONE)
-* Allow for prisoner exchanges (0%)
+* Allow for prisoner exchanges (100%)
 * Allows resizing board (50%)
 * Modify check return so UI gets more data back (0%)
 
@@ -53,6 +53,21 @@ Created by unsignedzero and started on 12-28-2012 as an idea.
 
 * * * *
 
+#### 0.8.1.0 [10-07-2013] #
+* Updated Kinetic to 4.7.1. 4.7.2 buggy for this system so it is not loaded.
+* Added fade animation for message box.
+* Added extra empty lines for readability/consistency and spaces after commas
+* Travis merged into development. Upgrading Kinetic to 4.6. Stable update
+  without any code changes required.
+* Added .gitignore to repo.
+
+#### 0.8.0.0 [10-07-2013] #
+* Jasmine-node test samples created and working
+* Created sample test file. Fixed author naming issue from NAMEREGEX to David
+  Tran by rebasing and now cherry-picking to the right branch.
+* Created work package.json files to prepare for travis-ci.
+* Updating development branch to 0.7.3.1
+
 #### 0.7.3.1 [09-27-2013] #
 * Removed extra spaces at end of line.
 * Added space before one line comments and make commenting consistent.
@@ -60,6 +75,7 @@ Created by unsignedzero and started on 12-28-2012 as an idea.
 * More browsers tested and moved to make README.md shorter
 * Fixed miscellaneous errors such as spacing for README.md
 * Updated UI bug where captured count doesn't reset until first click
+* Added function in Go engine to exchange prisoners
 
 #### 0.7.3.0 [04-05-2013] #
 * Updated comment in go\_engine.js

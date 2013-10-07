@@ -5,12 +5,12 @@
     <meta name="description" content="Go Board Test Page" />
     <meta name="robots" content="noodp" >
     <meta name="ROBOTS" content="NOINDEX">
-    
+
     <link rel="shortcut icon" href="ZCS1.ico" />
     <title>Go DEMO Page</title>
-    
+
     <link rel="stylesheet" type="text/css" href="CSS/reset.css" />
- 
+
     <script type="application/javascript" src="LIB/kinetic-v4.3.0.min.js"></script>
   </head>
   <body>
@@ -18,10 +18,10 @@
     <script>
 
       function drawCircle(localLayer, x, y, radius){
-      
+
         x += radius;
         y += radius;
-     
+
         var bendY = 240,
             arc_end = Math.sin(Math.PI/4),
             arc_mid = Math.tan(Math.PI/8);
@@ -32,7 +32,7 @@
             //Reference
             //http://board.flashkit.com/board/showthread.php?369672-Draw-a-circle-with-quadratic-bezier-curves
             context.beginPath();
-            context.moveTo(x+(radius<<1), y+radius); 
+            context.moveTo(x+(radius<<1), y+radius);
             context.quadraticCurveTo(
               radius+x+radius,-arc_mid*radius+y+radius,
               arc_end*radius+x+radius,-arc_end*radius+y+radius);
@@ -47,21 +47,21 @@
                      -radius+x+radius,                y+radius);
             context.bezierCurveTo(
                              (radius>>1)+x,radius+y-bendY,
-               ((radius   )+(radius>>1))+x,radius+y+bendY, 
+               ((radius   )+(radius>>1))+x,radius+y+bendY,
                              (radius<<1)+x,radius+y);
             context.closePath();
           };
-         
+
           return new Kinetic.Shape({
             x: x,
             y: y,
             fill: 'black',
-            
+
             drawFunc: function(canvas) {
               drawYinYangOutline(canvas.getContext(), x, y, radius);
               canvas.fillStroke(this);
             },
-            
+
             offset: [x+radius,y+radius],
             drawHitFunc: function(canvas) {
               drawYinYangOutline(canvas.getContext(), x, y, radius);
@@ -89,7 +89,7 @@
           },localLayer);
 
         anim.start();
-          
+
         //Ensures that a click on either object spins it
         circle.on('mousedown tap', function(){
           clickCount +=1;
@@ -102,10 +102,10 @@
         outline.on('mouseover touchmove', function(){
           clickCount +=1;
         });
-        
+
         localLayer.add(outline);
-        localLayer.add(circle);  
-      
+        localLayer.add(circle);
+
       }
 
       var stage = new Kinetic.Stage({
@@ -115,11 +115,11 @@
       });
 
       var MainLayer = new Kinetic.Layer();
-      
+
       drawCircle(MainLayer, 20, 20, 350);
-      
+
       stage.add(MainLayer);
-      
+
     </script>
   </body>
 </html>
