@@ -53,6 +53,10 @@ Created by unsignedzero and started on 12-28-2012 as an idea.
 
 * * * *
 
+* Travis merged into development. Upgrading Kinetic to 4.6. Stable update
+  without any code changes required.
+* Added .gitignore to repo.
+
 #### 0.8.0.0 [10-07-2013] #
 * Jasmine-node test samples created and working
 * Created sample test file. Fixed author naming issue from NAMEREGEX to David
