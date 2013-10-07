@@ -53,6 +53,10 @@ Created by unsignedzero and started on 12-28-2012 as an idea.
 
 * * * *
 
+* Removed prototype\_title and updated prototype\_spinner to kinetic 4.4.
+* Updated index\_web page to match index and load only web version of kinetic.
+* Removing BTest.md as no issues have occurred for a long period of time.
+
 #### 0.8.1.0 [10-07-2013] #
 * Updated Kinetic to 4.7.1. 4.7.2 buggy for this system so it is not loaded.
 * Added fade animation for message box.
