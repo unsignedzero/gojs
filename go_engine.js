@@ -1,7 +1,7 @@
 ﻿/*Go board Engine
  *Created by David Tran
  *on 01-03-2013
- *Version 0.8.0.0
+ *Version 0.8.1.0
  *Last modified 10-07-2013
  */
 
@@ -37,7 +37,7 @@ zxGoBoard = function(size, BoardMODE) {
 
   // This is the default null values
   var i, StoneCount;
-  setStoneCount(MODE,StoneCount);
+  setStoneCount(MODE, StoneCount);
 
   // HELPER VAR
 
@@ -79,7 +79,7 @@ zxGoBoard = function(size, BoardMODE) {
   }
 
   // They are collected in an array to easier use.
-  var direction      = [left,right,up,down],
+  var direction      = [left, right, up, down],
       directionCount = direction.length;
 
   // Assist Functions for debugging
@@ -179,7 +179,7 @@ zxGoBoard = function(size, BoardMODE) {
 
     // Cleans up the board's extra data
 
-    setStoneCount(MODE,StoneCount);
+    setStoneCount(MODE, StoneCount);
 
     if (MODE&2)
       BoardHash  = {};
@@ -192,7 +192,7 @@ zxGoBoard = function(size, BoardMODE) {
 
     if (pos < 0 || pos >= MAX)
       return -1;
-    return stoneRemover(Board[pos],pos);
+    return stoneRemover(Board[pos], pos);
   }
 
   function stoneRemover(color, pos){
@@ -241,7 +241,7 @@ zxGoBoard = function(size, BoardMODE) {
 
     if (pos < 0 || pos >= MAX)
       return false;
-    return libertyCheck(Board[pos],pos);
+    return libertyCheck(Board[pos], pos);
   }
 
   function libertyCheck (color, pos){
@@ -439,7 +439,7 @@ zxGoBoard = function(size, BoardMODE) {
 
     i = 0;
     while(i < BOARD){
-      output.push(mid.slice(i,BOARD_SIZE+i).join(""));
+      output.push(mid.slice(i, BOARD_SIZE+i).join(""));
       i += 1;
     }
 
@@ -543,7 +543,7 @@ zxGoBoard = function(size, BoardMODE) {
 
       // Update History
       if (MODE&4)
-        History.push([pos,color]);
+        History.push([pos, color]);
 
       // Update Stone Count
       if (MODE&8)
@@ -560,7 +560,7 @@ zxGoBoard = function(size, BoardMODE) {
         a = cloneBoard();
 
     clearBoard();
-    return [output,a];
+    return [output, a];
   };
 
   this.prisonerEx = function(maxValue){

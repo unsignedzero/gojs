@@ -1,7 +1,7 @@
 # GO JS [![Build status:Can't load apt.travis-ci.org](https://api.travis-ci.org/unsignedzero/gojs.png?branch=travis)](https://travis-ci.org/unsignedzero/gojs)
 
-This code project has two pieces a visual front that is created using
-mainly kineticJS and a backend which uses some jQuery. Each end can be used
+This code project has two pieces, a visual front that is created using
+mainly kineticJS and a logic backend. Each end can be used
 independently. Together, they allow the user to play Go, currently with
 someone else at the same machine. As this is currently a WIP, not all features
 that one would except in a GO game are implemented. Please see the TODO List below
@@ -53,6 +53,10 @@ Created by unsignedzero and started on 12-28-2012 as an idea.
 
 * * * *
 
+#### 0.8.1.0 [10-07-2013] #
+* Updated Kinetic to 4.7.1. 4.7.2 buggy for this system so it is not loaded.
+* Added fade animation for message box.
+* Added extra empty lines for readability/consistency and spaces after commas
 * Travis merged into development. Upgrading Kinetic to 4.6. Stable update
   without any code changes required.
 * Added .gitignore to repo.
