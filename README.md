@@ -53,6 +53,8 @@ Created by unsignedzero and started on 12-28-2012 as an idea.
 
 * * * *
 
+* Created gh-pages to use GitHub pages
+
 #### 0.8.1.0 [10-07-2013] #
 * Updated Kinetic to 4.7.1. 4.7.2 buggy for this system so it is not loaded.
 * Added fade animation for message box.
