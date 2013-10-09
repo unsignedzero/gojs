@@ -740,7 +740,7 @@ var zxGoUI = (function(){
     var localX, localy, width, height, font, fontSize, radius,
         stonePad, textPad, statusy,
         turnBoxSize, temp,
-        curY, i, maxi, j, maxj,
+        curY, i, maxi, j, maxj;
 
     localX      = 630 + (shiftx === undefined ? 0 : shiftx);
     localy      =  20 + (shifty === undefined ? 0 : shifty);
@@ -1381,7 +1381,7 @@ var zxGoUI = (function(){
 
     // Add to our board option
     boardOption.addx         = addx;
-    boardOption, addy         = addy;
+    boardOption.addy         = addy;
     boardOption.brdLayer     = brdLayer;
     boardOption.UILayer      = UILayer;
     boardOption.curTurnLayer = curTurnLayer;

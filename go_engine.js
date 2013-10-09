@@ -1,8 +1,8 @@
 ﻿/*Go board Engine
  *Created by David Tran
  *on 01-03-2013
- *Version 0.8.1.0
- *Last modified 10-07-2013
+ *Version 0.8.2.0
+ *Last modified 10-09-2013
  */
 
 // This generates the board class "object" that is used in the go_ui

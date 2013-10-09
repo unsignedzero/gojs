@@ -53,6 +53,7 @@ Created by unsignedzero and started on 12-28-2012 as an idea.
 
 * * * *
 
+* Bugfix on go\_engine code.
 * Removed prototype\_title and updated prototype\_spinner to kinetic 4.4.
 * Updated index\_web page to match index and load only web version of kinetic.
 * Removing BTest.md as no issues have occurred for a long period of time.
