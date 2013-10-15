@@ -9,7 +9,7 @@ var sideLength = 9,
     goBoard, go_engine,
     result;
 
-go_engine = require(__dirname + "/../go_engine.js").zxGoBoard;
+go_engine = require(__dirname + "/../JS/go_engine.js").zxGoBoard;
 
 goBoard = new zxGoBoard(sideLength, 3);
 

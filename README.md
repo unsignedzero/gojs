@@ -53,6 +53,9 @@ Created by unsignedzero and started on 12-28-2012 as an idea.
 
 * * * *
 
+* Updated titles of projects.
+* Moved js files into JS folder and updated version of kinetic on go title
+  page to version 4.7.1
 * Bugfix on go\_engine code.
 * Removed prototype\_title and updated prototype\_spinner to kinetic 4.4.
 * Updated index\_web page to match index and load only web version of kinetic.
