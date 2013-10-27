@@ -7,11 +7,11 @@
     <meta name="ROBOTS" content="NOINDEX">
 
     <link rel="shortcut icon" href="ZCS1.ico" />
-    <title>Go DEMO Page</title>
+    <title>GO board title prototype page</title>
 
     <link rel="stylesheet" type="text/css" href="CSS/reset.css" />
 
-    <script type="application/javascript" src="LIB/kinetic-v4.3.0.min.js"></script>
+    <script type="application/javascript" src="LIB/kinetic-v4.7.1.min.js"></script>
   </head>
   <body>
     <div id="container"></div>
@@ -38,7 +38,7 @@
               arc_end*radius+x+radius,-arc_end*radius+y+radius);
             context.quadraticCurveTo(
               arc_mid*radius+x+radius,        -radius+y+radius,
-                              x+radius,       -radius+y+radius);
+                             x+radius,        -radius+y+radius);
             context.quadraticCurveTo(
              -arc_mid*radius+x+radius,        -radius+y+radius,
              -arc_end*radius+x+radius,-arc_end*radius+y+radius);
@@ -57,15 +57,15 @@
             y: y,
             fill: 'black',
 
-            drawFunc: function(canvas) {
-              drawYinYangOutline(canvas.getContext(), x, y, radius);
-              canvas.fillStroke(this);
+            drawFunc: function(context) {
+              drawYinYangOutline(context, x, y, radius);
+              context.fillStrokeShape(this);
             },
 
             offset: [x+radius,y+radius],
-            drawHitFunc: function(canvas) {
-              drawYinYangOutline(canvas.getContext(), x, y, radius);
-              canvas.fillStroke(this);
+            drawHitFunc: function(context) {
+              drawYinYangOutline(context, x, y, radius);
+              context.fillStrokeShape(this);
             }
           });
         }
