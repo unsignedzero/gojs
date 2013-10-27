@@ -268,13 +268,13 @@ zxGoBoard = function(size, BoardMODE) {
         }
         else if (local_board[pos] === color){
           local_board[pos] = NEUTRAL_PIECE;
-          if ((i = left(pos)) !== -1)
+          if ((i = left( pos)) !== -1)
               queue.push(i);
           if ((i = right(pos)) !== -1)
               queue.push(i);
-          if ((i = up(  pos)) !== -1)
+          if ((i = up(   pos)) !== -1)
               queue.push(i);
-          if ((i = down(pos)) !== -1)
+          if ((i = down( pos)) !== -1)
               queue.push(i);
         }
       }

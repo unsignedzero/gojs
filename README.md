@@ -53,6 +53,8 @@ Created by unsignedzero and started on 12-28-2012 as an idea.
 
 * * * *
 
+#### 0.8.2.0 [10-27-2013 #
+* Added web version of jasmine so tests can be executed via browser only.
 * Updated titles of projects.
 * Moved js files into JS folder and updated version of kinetic on go title
   page to version 4.7.1
