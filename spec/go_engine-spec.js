@@ -1,7 +1,7 @@
 // Initializes the board and test it
 // Moves executed here may not be legal in a GO game nor fair...
 // Created by David Tran (unsignedzero)
-// Updated 10-07-2013
+// Updated 10-27-2013
 
 "use strict";
 var sideLength = 9,
@@ -9,7 +9,9 @@ var sideLength = 9,
     goBoard, go_engine,
     result;
 
-go_engine = require(__dirname + "/../go_engine.js").zxGoBoard;
+if (typeof(require) == "function") {
+  go_engine = require(__dirname + "/../JS/go_engine.js").zxGoBoard;
+}
 
 goBoard = new zxGoBoard(sideLength, 3);
 

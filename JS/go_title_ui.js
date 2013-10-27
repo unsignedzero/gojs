@@ -1,8 +1,8 @@
 ﻿/*Created by David Tran (unsignedzero)
  *on 1-13-2013
- *Version 0.7.3.0
- *Last modified 04-05-2013
- *This code creates the interactive go Title
+ *Version 0.8.1.0
+ *Last modified 10-15-2013
+ *This code creates the interactive go title page
  */
 
 zxGoTitle = function(canvasName, width, height){
@@ -54,20 +54,20 @@ zxGoTitle = function(canvasName, width, height){
       }
 
       return new Kinetic.Shape({
-      x: x,
-      y: y,
-      offset: [x+radius,y+radius],
-      fill: 'black',
+        x: x,
+        y: y,
+        offset: [x+radius,y+radius],
+        fill: 'black',
 
-      drawFunc: function(canvas) {
-        drawOutline( canvas.getContext() );
-        canvas.fillStroke(this);
-      },
+        drawFunc: function(context) {
+          drawOutline( context );
+          context.fillStrokeShape(this);
+        },
 
-      drawHitFunc: function(canvas) {
-        drawOutline( canvas.getContext() );
-        canvas.fillStroke(this);
-      }
+        drawHitFunc: function(context) {
+          drawOutline( context );
+          context.fillStrokeShape(this);
+        }
       });
 
     }
