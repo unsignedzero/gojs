@@ -53,6 +53,7 @@ Created by unsignedzero and started on 12-28-2012 as an idea.
 
 * * * *
 
+* Remove comment in json file.
 * Updated package.json version number.
 * Cleaning up README.md. [skip ci]
 

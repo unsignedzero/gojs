@@ -13,7 +13,6 @@
   "main": "go_engine.js",
   "scripts": {
     "test": "jasmine-node spec"
-// "test-travis": "cat coverage/lcov.info | coveralls"
   },
   "dependencies": {},
   "devDependencies": {
