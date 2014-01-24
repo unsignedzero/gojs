@@ -3,7 +3,7 @@
   "maintainers": "David Tran <unsignedzero@gmail.com>",
   "name": "gojs",
   "description": "A simple gojs game built with HTML 5 canvas",
-  "version": "0.7.3",
+  "version": "0.8.2",
   "licenses": ["MIT"],
   "homepage": "http://github.com/unsignedzero/gojs",
   "repository": {
@@ -13,6 +13,7 @@
   "main": "go_engine.js",
   "scripts": {
     "test": "jasmine-node spec"
+// "test-travis": "cat coverage/lcov.info | coveralls"
   },
   "dependencies": {},
   "devDependencies": {
