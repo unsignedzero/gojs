@@ -1,7 +1,7 @@
 # GO JS [![Build status:Can't load apt.travis-ci.org](https://api.travis-ci.org/unsignedzero/gojs.png?branch=travis)](https://travis-ci.org/unsignedzero/gojs)
 
-This code project has two pieces, a visual front that is created using
-mainly kineticJS and a logic backend. Each end can be used
+This code project has two pieces, a visual frontend that is created
+using kineticJS and a logic backend. Each piece can be used
 independently. Together, they allow the user to play Go, currently with
 someone else at the same machine. As this is currently a WIP, not all features
 that one would except in a GO game are implemented. Please see the TODO List below
@@ -53,7 +53,10 @@ Created by unsignedzero and started on 12-28-2012 as an idea.
 
 * * * *
 
-#### 0.8.2.0 [10-27-2013 #
+* Updated package.json version number.
+* Cleaning up README.md. [skip ci]
+
+#### 0.8.2.0 [10-27-2013] #
 * Added web version of jasmine so tests can be executed via browser only.
 * Updated titles of projects.
 * Moved js files into JS folder and updated version of kinetic on go title
